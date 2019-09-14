@@ -1,16 +1,13 @@
-import javax.swing.*;
-
+/**
+ * Main bootstrap class
+ */
 public class Application {
+    /**
+     * Bootstraps main application and runs the main window class
+     * @param args CLI args (ignored)
+     */
     public static void main(String[] args) {
-        JFrame f = new JFrame();
-
-        JButton b = new JButton("click");
-        b.setBounds(130, 100, 100, 40);
-
-        f.add(b);
-
-        f.setSize(400, 500);
-        f.setLayout(null);
-        f.setVisible(true);
+        CalculatorWindow window = new CalculatorWindow();
+        window.show();
     }
 }
