@@ -40,13 +40,15 @@ def main(root=None, verbose=False, process_count=None):
 
     path = os.path.abspath(root) if root is not None else os.getcwd()
     files = find_files(path, PYTHON_EXTENSION)
-    output = run_linter(files, " ".join(args))
+
     print()
     print("Running pylint on {} files:".format(len(files)))
     # Print each file in verbose mode
     if verbose:
         for file in files:
             print(" - {}".format(file))
+
+    output = run_linter(files, " ".join(args))
     print()
     print(output.getvalue())
 
