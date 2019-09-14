@@ -45,3 +45,43 @@ pylint source.py [...additional_files.py] --disable=missing-docstring,no-else-re
 > ```
 
 **Note that the above command includes specific arguments that disable/modify the behavior of `pylint`. These are designed to make the code style standards for this class less strict, so these arguments will be used when code style is graded.**
+
+##### Running - Script
+
+For your convenience, a python script has been provided that automatically runs `pylint` on every python file in a directory:
+
+**Example run**
+
+(in project root folder that also includes checkstyle.py):
+```bash
+$ python checkstyle.py
+
+Running pylint on 4 files:
+ - /mnt/d/Github/cs2340-codestyle/test/flask/api.py
+ - /mnt/d/Github/cs2340-codestyle/test/flask/app.py
+ - /mnt/d/Github/cs2340-codestyle/test/flask/models/object.py
+ - /mnt/d/Github/cs2340-codestyle/test/flask/models/object_formatted.py
+
+<.. code style reports ...>
+
+ ------------------------------------------------------------------
+ Your code has been rated at 3.18/10 (previous run: 3.18/10, +0.00)
+```
+
+###### Syntax
+
+```bash
+$ python checkstyle.py -h
+usage: checkstyle.py [-h] [--root path] [--parallel count] [--verbose] [--all]
+
+Checkstyle script to run pylint on every .py file in the CWD
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --root path, -r path  the path to run pylint over (defaults to current
+                        working directory)
+  --parallel count, -p count, -j count
+                        the number of parallel processes to split pylint into
+  --verbose, -v         whether to display additional output
+  --all, -a, --strict   enables all checks (strict mode)
+```
