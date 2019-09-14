@@ -35,13 +35,13 @@ pip install pylint
 To run `pylint` on a python source file(s), the following command can be run:
 
 ```bash
-pylint source.py [...additional_files.py] --disable=missing-docstring,no-else-return --const-naming-style=any
+pylint source.py [...additional_files.py] --disable=C0111,R1705,E0401,R0201 --const-naming-style=any
 ```
 
 > Note: if the command output sounds like `command not found` or `The term 'pylint' is not recognized as the name of a cmdlet, ...` or `'pylint' is not recognized as an internal or external command`, the alternative syntax below can be used:
 >
 > ```bash
-> python -m pylint source.py [...additional_files.py] --disable=missing-docstring,no-else-return --const-naming-style=any
+> python -m pylint source.py [...additional_files.py] --disable=C0111,R1705,E0401,R0201 --const-naming-style=any
 > ```
 
 **Note that the above command includes specific arguments that disable/modify the behavior of `pylint`. These are designed to make the code style standards for this class less strict, so these arguments will be used when code style is graded.**
