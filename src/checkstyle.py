@@ -40,7 +40,10 @@ def main(root=None, verbose=False, process_count=None, strict=False):
         args.append("-j {}".format(process_count))
 
     path = os.path.abspath(root) if root is not None else os.getcwd()
-    files = find_files(path, PYTHON_EXTENSION)
+    # Filter out the current script
+    current_script = os.path.basename(__file__)
+    files = [f for f in find_files(
+        path, PYTHON_EXTENSION) if not f.endswith(current_script)]
 
     print()
     print("Running pylint on {} files:".format(len(files)))
@@ -51,7 +54,7 @@ def main(root=None, verbose=False, process_count=None, strict=False):
 
     output = run_linter(files, " ".join(args), strict=strict)
     print()
-    print(output.getvalue())
+    print(output)
 
 
 def run_linter(files, args, strict=False):
@@ -75,7 +78,7 @@ def run_linter(files, args, strict=False):
 
     command = "{} {}".format(" ".join(files), get_options(args, strict=strict))
     (pylint_stdout, _) = lint.py_run(command, return_std=True)
-    return pylint_stdout
+    return pylint_stdout.getvalue()
 
 
 def find_files(path, extension):
