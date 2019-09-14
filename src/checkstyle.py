@@ -24,7 +24,8 @@ __author__ = "CS 2340 TAs"
 __version__ = "1.0"
 
 DESCRIPTION = "Checkstyle script to run pylint on every .py file in the CWD"
-DISABLED_CHECKS = ["missing-docstring", "no-else-return", "import-error"]
+DISABLED_CHECKS = ["missing-docstring",
+                   "no-else-return", "import-error", "no-self-use"]
 BASE_OPTIONS = "--const-naming-style=any"
 PYTHON_EXTENSION = ".py"
 

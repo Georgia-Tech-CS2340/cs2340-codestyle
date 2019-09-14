@@ -8,12 +8,12 @@ def format_message(name, message):
 
 
 class Object(Resource):
-    def get(name):
+    def get(self, name):
         if name in objects.keys():
             return objects[name], 200
         return format_message(name, "not found"), 404
 
-    def post(name):
+    def post(self, name):
         parser = reqparse.RequestParser()
         parser.add_argument('value')
         args = parser.parse_args()
@@ -26,7 +26,7 @@ class Object(Resource):
             else:
                 return "Object {} already exists".format(name), 402
 
-    def delete(name):
+    def delete(self, name):
         if name in objects.keys():
             del objects[name]
             return "Object {} deleted".format(name), 200
