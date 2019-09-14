@@ -1,4 +1,4 @@
-# Swing demo application
+# Flask demo application
 
 Designed to demonstrate basic Python Flask application & run `pylint` over.
 
