@@ -15,6 +15,8 @@ It can be installed by running:
 
   pip install pylint
 """)
+    import sys
+    sys.exit()
 
 import os
 import argparse
