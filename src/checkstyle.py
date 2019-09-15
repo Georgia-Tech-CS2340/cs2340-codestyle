@@ -18,8 +18,8 @@ DESCRIPTION = "Checkstyle script to run checkstyle on every .java file in the CW
 JAVA_EXTENSION = ".java"
 CHECKSTYLE_JAR_NAME = "checkstyle-8.24-all.jar"
 CHECKSTYLE_JAR_URL = "https://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.24/checkstyle-8.24-all.jar"
-CHECKSTYLE_XML_NAME = "google_checks.xml"
-CHECKSTYLE_XML_URL = "https://raw.githubusercontent.com/checkstyle/checkstyle/master/src/main/resources/google_checks.xml"
+CHECKSTYLE_XML_NAME = "cs2340_checks.xml"
+CHECKSTYLE_XML_URL = "https://raw.githubusercontent.com/jazevedo620/cs2340-codestyle/master/src/cs2340_checks.xml"
 BASE_PROCESS = ["java", "-jar"]
 
 

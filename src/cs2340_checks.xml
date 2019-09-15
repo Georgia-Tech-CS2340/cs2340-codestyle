@@ -4,6 +4,9 @@
           "https://checkstyle.org/dtds/configuration_1_3.dtd">
 
 <module name = "Checker">
+    <!-- Credit to the CS 1332 team for the basis of this checkstyle
+    configuration file -->
+
     <property name="charset" value="UTF-8"/>
     <property name="severity" value="warning"/>
 
