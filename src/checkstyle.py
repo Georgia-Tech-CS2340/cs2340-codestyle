@@ -1,84 +1,124 @@
 """
-Checkstyle script to automatically run pylint on every python source file within
+Checkstyle script to automatically run Checkstyle on every java source file within
 the current working directory (using class-specific options)
 """
 
-# Dependency check
-try:
-    # pylint: disable=unused-import
-    import pylint
-except ImportError:
-    print(
-        """Error, Module pylint is required
-********************************
-It can be installed by running:
-
-  pip install pylint
-""")
-
 import os
 import argparse
-from pylint import epylint as lint
+import subprocess
+import urllib.request
+import sys
+from subprocess import PIPE
+from shutil import which
 
 __author__ = "CS 2340 TAs"
 __version__ = "1.0"
 
-DESCRIPTION = "Checkstyle script to run pylint on every .py file in the CWD"
-DISABLED_CHECKS = ["missing-docstring",
-                   "no-else-return", "import-error", "no-self-use"]
-BASE_OPTIONS = "--const-naming-style=any"
-PYTHON_EXTENSION = ".py"
+DESCRIPTION = "Checkstyle script to run checkstyle on every .java file in the CWD"
+JAVA_EXTENSION = ".java"
+CHECKSTYLE_JAR_NAME = "checkstyle-8.24-all.jar"
+CHECKSTYLE_JAR_URL = "https://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.24/checkstyle-8.24-all.jar"
+CHECKSTYLE_XML_NAME = "google_checks.xml"
+CHECKSTYLE_XML_URL = "https://raw.githubusercontent.com/checkstyle/checkstyle/master/src/main/resources/google_checks.xml"
+BASE_PROCESS = ["java", "-jar"]
 
 
-def main(root=None, verbose=False, process_count=None, strict=False):
+def main(root=None, verbose=False, strict=False):
     """
-    Runs the main pylint script and parses/redirects output
+    Runs the main checkstyle script and parses/redirects output
     """
 
-    args = []
-    if process_count is not None:
-        args.append("-j {}".format(process_count))
+    # Verify java is installed
+    if which("java") is None:
+        print(
+            """Java is required to run Checkstyle. Make sure it is installed
+and that it exists on your PATH. More instructions are available here:
+
+https://www.java.com/en/download/help/path.xml""")
+        return
+
+    # Assemble dependencies
+    print()
+    jar_path = find_or_download(CHECKSTYLE_JAR_NAME, CHECKSTYLE_JAR_URL)
+    xml_path = find_or_download(CHECKSTYLE_XML_NAME, CHECKSTYLE_XML_URL)
 
     path = os.path.abspath(root) if root is not None else os.getcwd()
-    # Filter out the current script
-    current_script = os.path.basename(__file__)
-    files = [f for f in find_files(
-        path, PYTHON_EXTENSION) if not f.endswith(current_script)]
+    files = find_files(path, JAVA_EXTENSION)
 
-    print()
-    print("Running pylint on {} files:".format(len(files)))
+    print("Running Checkstyle on {} files:".format(len(files)))
     # Print each file in verbose mode
     if verbose:
         for file in files:
             print(" - {}".format(file))
 
-    output = run_linter(files, " ".join(args), strict=strict)
+    output = run_checkstyle(files, jar_path=jar_path,
+                            xml_path=xml_path, strict=strict)
     print()
     print(output)
 
 
-def run_linter(files, args, strict=False):
+def find_or_download(filename, url):
     """
-    Runs pylint on every file specified using the class-specific
+    Finds a file with the given filename in the same directory as the current
+    script or downloads it from the given url if it doesn't exist
+    """
+
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    target_path = os.path.join(current_dir, filename)
+    exists = os.path.exists(target_path)
+
+    if (exists):
+        return target_path
+
+    # Download file
+    print("Downloading {}".format(filename))
+    urllib.request.urlretrieve(url, target_path, reporthook)
+    print()
+    return target_path
+
+
+def reporthook(blocknum, blocksize, totalsize):
+    """
+    Report hook callback for urllib.request.urlretrieve
+    Sourced from:
+    https://stackoverflow.com/questions/13881092/download-progressbar-for-python-3
+    """
+
+    readsofar = blocknum * blocksize
+    if totalsize > 0:
+        percent = readsofar * 1e2 / totalsize
+        s = "\r%5.1f%% %*d / %d" % (
+            percent, len(str(totalsize)), readsofar, totalsize)
+        sys.stdout.write(s)
+        if readsofar >= totalsize:
+            sys.stdout.write("\n")
+    else:
+        sys.stdout.write("read %d\n" % (readsofar,))
+
+
+def run_checkstyle(files, jar_path=None, xml_path=None, strict=False):
+    """
+    Runs checkstyle on every file specified using the class-specific
     arguments as well as any additional ones specified
 
     Parameters:
-    files (array(string)): filepaths to python source files
-    args (string): CLI arguments
+    files (array(string)): filepaths to java source files
 
     Named:
     strict (boolean): Whether to run the linter in strict mode
+    jar_path (string): The filepath to the checkstyle jar
+    xml_path (string): The filepath to the checkstyle config XML file
 
     Returns:
-    the stdout output from pylint
+    the stdout output from checkstyle
     """
 
-    if not files:
+    if not files or jar_path is None or xml_path is None:
         return ""
 
-    command = "{} {}".format(" ".join(files), get_options(args, strict=strict))
-    (pylint_stdout, _) = lint.py_run(command, return_std=True)
-    return pylint_stdout.getvalue()
+    args = BASE_PROCESS + [jar_path, "-c", xml_path] + files
+    result = subprocess.run(args, stdout=PIPE)
+    return result.stdout.decode(sys.stdout.encoding)
 
 
 def find_files(path, extension):
@@ -95,23 +135,6 @@ def find_files(path, extension):
     return file_list
 
 
-def get_options(additional_options, strict=False):
-    """
-    Formats the options string
-
-    Named:
-    strict (boolean): Whether to run the linter in strict mode
-
-    Parameters:
-    additional_options (string): additional arguments passed to the CLI to append
-    """
-
-    if strict:
-        return additional_options
-
-    return "--disable={} {} {}".format(",".join(DISABLED_CHECKS), BASE_OPTIONS, additional_options)
-
-
 def bootstrap():
     """
     Runs CLI parsing/execution
@@ -120,9 +143,7 @@ def bootstrap():
     # Argument definitions
     parser = argparse.ArgumentParser(description=DESCRIPTION)
     parser.add_argument("--root", "-r", metavar="path",
-                        help="the path to run pylint over (defaults to current working directory)")
-    parser.add_argument("--parallel", "-p", "-j", metavar="count",
-                        help="the number of parallel processes to split pylint into")
+                        help="the path to run checkstyle over (defaults to current working directory)")
     parser.add_argument("--verbose", "-v", action="store_true",
                         help="whether to display additional output")
     parser.add_argument("--all", "-a", "--strict", action="store_true",
@@ -130,8 +151,7 @@ def bootstrap():
 
     # Parse arguments
     parsed_args = parser.parse_args()
-    main(root=parsed_args.root, process_count=parsed_args.parallel,
-         verbose=parsed_args.verbose, strict=parsed_args.all)
+    main(root=parsed_args.root, verbose=parsed_args.verbose, strict=parsed_args.all)
 
 
 # Run script

@@ -10,21 +10,25 @@ import javax.swing.event.DocumentListener;
  * Main window component that displays calculator UI
  */
 public class CalculatorWindow {
-    private static final String[] OPERANDS = { "A", "B" };
+    private static final String[] OPERANDS = {"A", "B"};
     private static final String HEADER_TEXT = "Java Swing Calculator Demo";
     private static final int FORM_PADDING = 0;
     private static final int OUTER_PADDING = 6;
     private static final int SPACING = 6;
-    private static final int[] DEFAULT_SIZE = { 400, 500 };
+    private static final int[] DEFAULT_SIZE = {400, 500};
     private static final int FORM_LINE_HEIGHT = 36;
     private static final int OPERATION_LEFT_SPACING = 16;
     private static final int COMBO_BOX_WIDTH = 150;
     private static final String RESULT_FORMAT = "Result: %s";
-    private static final String[] OPERATIONS = { "+", "-", "*", "/", "^", "%" };
+    private static final String[] OPERATIONS = {"+", "-", "*", "/", "^", "%"};
     @SuppressWarnings("unchecked")
-    private static final BiFunction<Integer, Integer, Integer>[] OPERATION_FUNCTIONS = (BiFunction<Integer, Integer, Integer>[]) new BiFunction[] {
-            (a, b) -> ((int) a + (int) b), (a, b) -> ((int) a - (int) b), (a, b) -> ((int) a * (int) b),
-            (a, b) -> ((int) a / (int) b), (a, b) -> ((int) Math.pow((int) a, (int) b)),
+    private static final BiFunction<Integer, Integer, Integer>[] OPERATION_FUNCTIONS =
+        (BiFunction<Integer, Integer, Integer>[]) new BiFunction[] {
+            (a, b) -> ((int) a + (int) b),
+            (a, b) -> ((int) a - (int) b),
+            (a, b) -> ((int) a * (int) b),
+            (a, b) -> ((int) a / (int) b),
+            (a, b) -> ((int) Math.pow((int) a, (int) b)),
             (a, b) -> ((int) a % (int) b) };
 
     private JFrame root;
@@ -46,8 +50,8 @@ public class CalculatorWindow {
     protected JPanel constructLayout() {
         JPanel rootLayout = new JPanel();
         rootLayout.setLayout(new BoxLayout(rootLayout, BoxLayout.PAGE_AXIS));
-        rootLayout
-                .setBorder(BorderFactory.createEmptyBorder(OUTER_PADDING, OUTER_PADDING, OUTER_PADDING, OUTER_PADDING));
+        rootLayout.setBorder(BorderFactory.createEmptyBorder(
+            OUTER_PADDING, OUTER_PADDING, OUTER_PADDING, OUTER_PADDING));
 
         JLabel label = new JLabel(HEADER_TEXT);
         JPanel labelLayout = new JPanel();
@@ -101,8 +105,8 @@ public class CalculatorWindow {
             this.operands[i] = txtField.getText();
         }
 
-        SpringUtilities.makeCompactGrid(panel, OPERANDS.length, 2, FORM_PADDING, FORM_PADDING, FORM_PADDING,
-                FORM_PADDING);
+        SpringUtilities.makeCompactGrid(panel, OPERANDS.length, 2,
+                FORM_PADDING, FORM_PADDING, FORM_PADDING, FORM_PADDING);
         return panel;
     }
 

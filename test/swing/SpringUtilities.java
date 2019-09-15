@@ -40,21 +40,12 @@ import java.awt.*;
  */
 public class SpringUtilities {
     /**
-     * A debugging utility that prints to stdout the component's minimum, preferred,
-     * and maximum sizes.
-     */
-    public static void printSizes(Component c) {
-        System.out.println("minimumSize = " + c.getMinimumSize());
-        System.out.println("preferredSize = " + c.getPreferredSize());
-        System.out.println("maximumSize = " + c.getMaximumSize());
-    }
-
-    /**
      * Aligns the first <code>rows</code> * <code>cols</code> components of
      * <code>parent</code> in a grid. Each component is as big as the maximum
      * preferred width and height of the components. The parent is made just big
      * enough to fit them all.
      *
+     * @param parent   parent container
      * @param rows     number of rows
      * @param cols     number of columns
      * @param initialX x location to start the grid at
@@ -62,7 +53,8 @@ public class SpringUtilities {
      * @param xPad     x padding between cells
      * @param yPad     y padding between cells
      */
-    public static void makeGrid(Container parent, int rows, int cols, int initialX, int initialY, int xPad, int yPad) {
+    public static void makeGrid(
+            Container parent, int rows, int cols, int initialX, int initialY, int xPad, int yPad) {
         SpringLayout layout;
         try {
             layout = (SpringLayout) parent.getLayout();
@@ -127,7 +119,8 @@ public class SpringUtilities {
     }
 
     /* Used by makeCompactGrid. */
-    private static SpringLayout.Constraints getConstraintsForCell(int row, int col, Container parent, int cols) {
+    private static SpringLayout.Constraints getConstraintsForCell(
+            int row, int col, Container parent, int cols) {
         SpringLayout layout = (SpringLayout) parent.getLayout();
         Component c = parent.getComponent(row * cols + col);
         return layout.getConstraints(c);
@@ -139,6 +132,7 @@ public class SpringUtilities {
      * maximum preferred width of the components in that column; height is similarly
      * determined for each row. The parent is made just big enough to fit them all.
      *
+     * @param parent   parent container
      * @param rows     number of rows
      * @param cols     number of columns
      * @param initialX x location to start the grid at
@@ -146,8 +140,8 @@ public class SpringUtilities {
      * @param xPad     x padding between cells
      * @param yPad     y padding between cells
      */
-    public static void makeCompactGrid(Container parent, int rows, int cols, int initialX, int initialY, int xPad,
-            int yPad) {
+    public static void makeCompactGrid(
+            Container parent, int rows, int cols, int initialX, int initialY, int xPad, int yPad) {
         SpringLayout layout;
         try {
             layout = (SpringLayout) parent.getLayout();
