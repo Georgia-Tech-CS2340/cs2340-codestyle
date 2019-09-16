@@ -19,6 +19,7 @@ It can be installed by running:
     sys.exit()
 
 import os
+import re
 import argparse
 from pylint import epylint as lint
 
@@ -30,6 +31,8 @@ DISABLED_CHECKS = ["missing-docstring",
                    "no-else-return", "import-error", "no-self-use"]
 BASE_OPTIONS = "--const-naming-style=any"
 PYTHON_EXTENSION = ".py"
+SCORE_REGEX = r"-+\s+Your code has been rated at (-?[0-9\.]+)\/10( \(previous run: -?[0-9\.]+\/10, [-+][0-9\.]+\))?"
+SCORE_FORMAT = """Your code has been rated at {:.2f}/10 [raw score: {:.2f}/10]"""
 
 
 def main(root=None, verbose=False, process_count=None, strict=False):
@@ -56,7 +59,22 @@ def main(root=None, verbose=False, process_count=None, strict=False):
 
     output = run_linter(files, " ".join(args), strict=strict)
     print()
-    print(output)
+    print(re.sub(SCORE_REGEX, "", output).rstrip())
+    print()
+
+    # Print score
+    match = re.search(SCORE_REGEX, output)
+    if match:
+        score = float(match.group(1))
+        score_output = SCORE_FORMAT.format(max(score, 0), score)
+
+        # Add previous score addendum if it exists
+        if match.group(2) is not None:
+            score_output += match.group(2)
+
+        print(len(score_output) * "-")
+        print(score_output)
+        print()
 
 
 def run_linter(files, args, strict=False):

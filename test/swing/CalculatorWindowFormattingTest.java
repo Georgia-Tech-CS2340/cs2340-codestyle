@@ -8,14 +8,13 @@ import javax.swing.event.DocumentListener;
 
 /**
  * Main window component that displays calculator UI
- *
- * ** Intentionally poorly formatted to test checkstyle **
+ * ;;;;
+ * ** Intentionally poorly formatted to test checkstyle ** ;
  */
 public class CalculatorWindowFormattingTest {
-    private static final String[ ] OPERANDS = {"A", "B" };
+    private static final String[] OPERANDS = {"A", "B"};
     private static final  String HEADER_TEXT = "Java Swing Calculator Demo";
-    private static final int FORM_PADDING =
-0;
+    private static final int FORM_PADDING = 0;
     private static final int OUTER_PADDING = 6;
     private static final int SPACING = 6;
     private static final int[] DEFAULT_SIZE = {400, 500};
@@ -27,10 +26,10 @@ public class CalculatorWindowFormattingTest {
     @SuppressWarnings("unchecked")
     private static final BiFunction<Integer, Integer, Integer>[] OPERATION_FUNCTIONS =
         (BiFunction<Integer, Integer, Integer>[]) new BiFunction[] {
-        (a,b)->((int)a+(int)b) ,
+            (a, b) -> ((int) a + (int) b) ,
             (a, b) -> ((int) a - (int) b),
             (a, b) -> ((int) a * (int) b),
-                (a, b) -> ((int) a / (int) b),
+            (a, b) -> ((int) a / (int) b),
             (a, b) -> ((int) Math.pow((int) a, (int) b)),
             (a, b) -> ((int) a % (int) b) };
 
@@ -39,12 +38,12 @@ public class CalculatorWindowFormattingTest {
     private String[] operands = new String[OPERANDS.length];
     private int currentOperation;
 
-public CalculatorWindowFormattingTest(){
-    this.root = new JFrame();
-    this.root.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    this.root.setContentPane(this.CONSTRUCT_LAYOUT());
-    this.root.setSize(DEFAULT_SIZE[0], DEFAULT_SIZE[1]);
-}
+    public CalculatorWindowFormattingTest(){
+        this.root = new JFrame();
+        this.root.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.root.setContentPane(this.CONSTRUCT_LAYOUT());
+        this.root.setSize(DEFAULT_SIZE[0], DEFAULT_SIZE[1]);
+    }
 
     public void show() {
         this.root.setVisible(true);
@@ -80,10 +79,19 @@ public CalculatorWindowFormattingTest(){
             txtField.setMaximumSize(new Dimension(Integer.MAX_VALUE, FORM_LINE_HEIGHT));
             final int textIndex = i;
             txtField.getDocument().addDocumentListener(new DocumentListener() {
-                @Override public void insertUpdate(DocumentEvent e) { update(); }
-                @Override public void removeUpdate(DocumentEvent e) { update(); }
-                @Override public void changedUpdate(DocumentEvent e) { update(); }
-                private void update() { operands[textIndex] = txtField.getText(); invalidate(); }
+                @Override public void insertUpdate(DocumentEvent e) {
+                    update();
+                }
+                @Override public void removeUpdate(DocumentEvent e) {
+                 update();
+                }
+                @Override public void changedUpdate(DocumentEvent e) {
+                    update();
+                }
+                private void update() {
+                    operands[textIndex] = txtField.getText();
+                    invalidate();
+                }
             });
 
             lbl.setLabelFor(txtField);
@@ -123,9 +131,9 @@ public CalculatorWindowFormattingTest(){
 
         return panel; }
 
-protected void resetResult() {
-    this.resultLabel.setText(String.format(RESULT_FORMAT, ""));
-}
+    protected void resetResult() {
+        this.resultLabel.setText(String.format(RESULT_FORMAT, ""));
+    }
 
     protected void setResult(int newResult) {
         this.resultLabel.setText(String.format(RESULT_FORMAT, String.valueOf(newResult)));
@@ -134,7 +142,7 @@ protected void resetResult() {
     protected void setCurrentOperation(int newOperation) {
         int old = this.currentOperation;
         this.currentOperation = newOperation;
-        if(old != newOperation) {
+        if (old != newOperation) {
             this.invalidate();
         }
     }
@@ -151,15 +159,11 @@ protected void resetResult() {
         }
     }
 
-    protected boolean isInteger(String val)
-    {
-        try
-        {
+    protected boolean isInteger(String val) {
+        try {
             Integer.parseInt(val);
             return true;
-        }
-        catch (NumberFormatException e)
-        {
+        } catch (NumberFormatException e) {
             return false;
         }
     }

@@ -8,6 +8,7 @@ import argparse
 import subprocess
 import urllib.request
 import sys
+import re
 from subprocess import PIPE
 from shutil import which
 
@@ -21,6 +22,13 @@ CHECKSTYLE_JAR_URL = "https://github.com/checkstyle/checkstyle/releases/download
 CHECKSTYLE_XML_NAME = "cs2340_checks.xml"
 CHECKSTYLE_XML_URL = "https://raw.githubusercontent.com/jazevedo620/cs2340-codestyle/master/src/cs2340_checks.xml"
 BASE_PROCESS = ["java", "-jar"]
+MULTILINE_COMMENT_REGEX = r"\/\*([\S\s]+?)\*\/"
+SINGLELINE_COMMENT_REGEX = r"\/{2,}.+"
+STATEMENT_REGEX = r"[^;]+?;"
+AFTER_BRACE_REGEX = r"{\s*;"
+EMPTY_STATEMENT_REGEX = r"^\s*;"
+CHECKSTYLE_OUTPUT_REGEX = r"^\[[A-Z]+\] (.+?):\d+(?::\d+?)?:"
+SCORE_FORMAT = """Your code has been rated at {:.2f}/10 [raw score: {:.2f}/10]"""
 
 
 def main(root=None, verbose=False, strict=False):
@@ -56,6 +64,13 @@ https://www.java.com/en/download/help/path.xml""")
     print()
     print(output)
 
+    # Print score
+    score = assemble_score(files, output)
+    score_output = SCORE_FORMAT.format(max(score, 0), score)
+    print(len(score_output) * "-")
+    print(score_output)
+    print()
+
 
 def find_or_download(filename, url):
     """
@@ -75,6 +90,75 @@ def find_or_download(filename, url):
     urllib.request.urlretrieve(url, target_path, reporthook)
     print()
     return target_path
+
+
+def assemble_score(files, checkstyle_output):
+    """
+    Calculates code "score" using the same formula as pylint for consistency:
+    https://docs.pylint.org/en/1.6.0/faq.html#pylint-gave-my-code-a-negative-rating-out-of-ten-that-can-t-be-right
+    """
+
+    errors = count_errors(checkstyle_output)
+    statements = 0
+    for filename in files:
+        statements = count_statements(filename)
+
+    if statements is 0:
+        return 10.0
+
+    return 10.0 - ((float(5 * errors) / statements) * 10)
+
+
+def count_errors(checkstyle_output):
+    """
+    Counts total checkstyle errors given the checkstyle stdout
+    """
+
+    count = 0
+    for line in checkstyle_output.splitlines():
+        if line.startswith("["):
+            if re.match(CHECKSTYLE_OUTPUT_REGEX, line):
+                count += 1
+
+    return count
+
+
+def count_statements(filename):
+    """
+    Counts the number of Java statements included in a file
+    each semicolon counts as a semicolon as long as it isn't preceded by only
+    whitespace or brackets before the previous semicolon
+    """
+
+    if not os.path.exists(filename):
+        return 0
+
+    count = 0
+    with open(filename, "r+") as java_file:
+        buffer = ""
+        contents = java_file.read()
+        contents = re.sub(MULTILINE_COMMENT_REGEX, "", contents)
+
+        for line in contents.splitlines():
+            buffer += line
+            if ";" in buffer:
+                # Remove single-line comments
+                buffer = re.sub(SINGLELINE_COMMENT_REGEX, "", buffer)
+
+                # Process buffer
+                for match in re.finditer(STATEMENT_REGEX, buffer):
+                    statement_candidate = match.group()
+                    if not re.search(AFTER_BRACE_REGEX, buffer) and not re.search(EMPTY_STATEMENT_REGEX, buffer):
+                        count += 1
+
+                # Clear buffer
+                buffer = ""
+
+            if len(buffer) > 1024:
+                # Flush buffer
+                buffer = buffer[-128:]
+
+    return count
 
 
 def reporthook(blocknum, blocksize, totalsize):
