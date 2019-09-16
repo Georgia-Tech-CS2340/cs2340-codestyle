@@ -19,6 +19,7 @@ DESCRIPTION = "Checkstyle script to run checkstyle on every .java file in the CW
 JAVA_EXTENSION = ".java"
 CHECKSTYLE_JAR_NAME = "checkstyle-8.24-all.jar"
 CHECKSTYLE_JAR_URL = "https://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.24/checkstyle-8.24-all.jar"
+CHECKSTYLE_JAR_GITIGNORE = "checkstyle-*.jar"
 CHECKSTYLE_XML_NAME = "cs2340_checks.xml"
 CHECKSTYLE_XML_URL = "https://raw.githubusercontent.com/jazevedo620/cs2340-codestyle/master/cs2340_checks.xml"
 BASE_PROCESS = ["java", "-jar"]
@@ -29,6 +30,11 @@ AFTER_BRACE_REGEX = r"{\s*;"
 EMPTY_STATEMENT_REGEX = r"^\s*;"
 CHECKSTYLE_OUTPUT_REGEX = r"^\[[A-Z]+\] (.+?):\d+(?::\d+?)?:"
 SCORE_FORMAT = """Your code has been rated at {:.2f}/10 [raw score: {:.2f}/10]"""
+GIT_REPO_COMMAND = ["git", "rev-parse", "--show-toplevel"]
+GIT_REPO_FAILED_SUBSTRING = "fatal: not a git repository"
+GITIGNORE = ".gitignore"
+IGNORED_FILE_COMMAND = ["git", "status", "--ignored", "--short"]
+IGNORED_FILE_REGEX = "^!! (.+)$"
 
 
 def main(root=None, verbose=False, strict=False):
@@ -47,8 +53,13 @@ https://www.java.com/en/download/help/path.xml""")
 
     # Assemble dependencies
     print()
-    jar_path = find_or_download(CHECKSTYLE_JAR_NAME, CHECKSTYLE_JAR_URL)
-    xml_path = find_or_download(CHECKSTYLE_XML_NAME, CHECKSTYLE_XML_URL)
+    xml_path, _ = find_or_download(CHECKSTYLE_XML_NAME, CHECKSTYLE_XML_URL)
+    jar_path, jar_downloaded = find_or_download(CHECKSTYLE_JAR_NAME, CHECKSTYLE_JAR_URL)
+    if jar_downloaded:
+        if add_to_gitignore(jar_path):
+            print("""> Note: The checkstyle jar has been downloaded and automatically added to your gitignore.
+        This change should be checked into version control.""")
+            print()
 
     path = os.path.abspath(root) if root is not None else os.getcwd()
     files = find_files(path, JAVA_EXTENSION)
@@ -72,6 +83,70 @@ https://www.java.com/en/download/help/path.xml""")
     print()
 
 
+def add_to_gitignore(filename):
+    """
+    Adds the given file to the gitignore if applicable/necessary
+    """
+
+    if which("git") is None:
+        return False
+
+    repo_relative_folder = os.path.dirname(filename)
+    result = subprocess.run(GIT_REPO_COMMAND, stdout=PIPE, cwd=repo_relative_folder)
+    repo_root = result.stdout.decode(sys.stdout.encoding).strip()
+
+    if GIT_REPO_FAILED_SUBSTRING in repo_root:
+        return False
+
+    # Clean path
+    repo_root = os.path.normpath(repo_root)
+
+    # Find .gitignore file if it exists by walking down the tree
+    gitignore_path = find_gitignore(repo_root, repo_relative_folder)
+    to_ignore_name = CHECKSTYLE_JAR_GITIGNORE
+    print(to_ignore_name)
+
+    if gitignore_path is None:
+        # Create gitignore file at project root
+        with open(os.path.join(repo_root, GITIGNORE), "w") as gitignore:
+            gitignore.write(to_ignore_name)
+        return True
+    else:
+        if is_ignored(to_ignore_name, cwd=repo_relative_folder):
+            return False
+        else:
+            with open(gitignore_path, "a") as gitignore:
+                gitignore.write(to_ignore_name)
+            return True
+
+
+def find_gitignore(repo_root, top_folder):
+    """
+    Finds the first .gitignore file starting at the top_folder and walking up
+    the tree until the repo_root is found, or None if not found
+    """
+
+    # TODO implement
+    print(repo_root)
+    print(top_folder)
+
+    return None
+
+
+def is_ignored(filename, cwd=None):
+    """
+    Determines whether the given file is ignored in its containing git repository
+    """
+
+    result = subprocess.run(IGNORED_FILE_COMMAND, stdout=PIPE, cwd=cwd)
+    output = result.stdout.decode(sys.stdout.encoding)
+    for line in output.splitlines():
+        if re.match(IGNORED_FILE_REGEX, line) and filename in line:
+            return True
+
+    return False
+
+
 def find_or_download(filename, url):
     """
     Finds a file with the given filename in the same directory as the current
@@ -83,13 +158,13 @@ def find_or_download(filename, url):
     exists = os.path.exists(target_path)
 
     if (exists):
-        return target_path
+        return target_path, False
 
     # Download file
     print("Downloading {}".format(filename))
     urllib.request.urlretrieve(url, target_path, reporthook)
     print()
-    return target_path
+    return target_path, True
 
 
 def assemble_score(files, checkstyle_output):
