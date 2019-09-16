@@ -138,25 +138,11 @@ def count_statements(filename):
         buffer = ""
         contents = java_file.read()
         contents = re.sub(MULTILINE_COMMENT_REGEX, "", contents)
-
-        for line in contents.splitlines():
-            buffer += line
-            if ";" in buffer:
-                # Remove single-line comments
-                buffer = re.sub(SINGLELINE_COMMENT_REGEX, "", buffer)
-
-                # Process buffer
-                for match in re.finditer(STATEMENT_REGEX, buffer):
-                    statement_candidate = match.group()
-                    if not re.search(AFTER_BRACE_REGEX, buffer) and not re.search(EMPTY_STATEMENT_REGEX, buffer):
-                        count += 1
-
-                # Clear buffer
-                buffer = ""
-
-            if len(buffer) > 1024:
-                # Flush buffer
-                buffer = buffer[-128:]
+        contents = re.sub(SINGLELINE_COMMENT_REGEX, "", contents)
+        for match in re.finditer(STATEMENT_REGEX, contents):
+            statement_candidate = match.group()
+            if not re.search(AFTER_BRACE_REGEX, buffer) and not re.search(EMPTY_STATEMENT_REGEX, buffer):
+                count += 1
 
     return count
 
