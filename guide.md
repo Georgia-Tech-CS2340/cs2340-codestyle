@@ -195,7 +195,7 @@ As is shown in the example output, the script will automatically download the ch
 
 The score given at the bottom is a metric of overall code quality, and is computed using the following formula where `e` is the number of Checkstyle errors/warnings and `n` is the number of Java statements in the scanned code:
 
-![S(e,n)=10-50(e/n)](https://i.imgur.com/qm4moJK.png)
+![S(e,n)=10(1-(5e/n))](https://i.imgur.com/cqRVxbc.png)
 
 ## Running Checkstyle Directly
 
