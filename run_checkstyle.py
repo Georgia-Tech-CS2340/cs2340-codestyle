@@ -185,7 +185,7 @@ def find_or_download(filename, url):
 
     # Download file
     print("Downloading {}".format(filename))
-    urllib.request.urlretrieve(url, target_path, reporthook)
+    urllib.request.urlretrieve(url, target_path, report_hook)
     print()
     return target_path, True
 
@@ -245,22 +245,23 @@ def count_statements(filename):
     return count
 
 
-def reporthook(blocknum, blocksize, totalsize):
+def report_hook(block_num, block_size, total_size):
     """
     Report hook callback for urllib.request.urlretrieve
     Sourced from:
     https://stackoverflow.com/questions/13881092/download-progressbar-for-python-3
     """
 
-    readsofar = blocknum * blocksize
-    if totalsize > 0:
-        percent = min(readsofar * 1e2 / totalsize, 1e2)
-        progress = "\r{:5.1f}% {:d} / {:d}".format(percent, min(totalsize, readsofar), totalsize)
-        sys.stdout.write(progress)
-        if readsofar >= totalsize:
+    read_progress = block_num * block_size
+    if total_size > 0:
+        percent = min(read_progress * 1e2 / total_size, 1e2)
+        clamped_progress = min(total_size, read_progress)
+        progress_string = "\r{:5.1f}% {:d} / {:d}".format(percent, clamped_progress, total_size)
+        sys.stdout.write(progress_string)
+        if read_progress >= total_size:
             sys.stdout.write("\n")
     else:
-        sys.stdout.write("read %d\n" % (readsofar,))
+        sys.stdout.write("read {:d}\n".format(read_progress))
 
 
 def run_checkstyle(files, jar_path=None, xml_path=None):
