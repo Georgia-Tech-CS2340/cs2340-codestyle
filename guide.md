@@ -82,13 +82,13 @@ This will likely result in a lower score than without all checks enabled, but **
 Once the required files are present, run the following command, adding each file to the end as necessary:
 
 ```shell
-python -m pylint --disable=C0111,R1705,E0401,R0201 file1.py file2.py
+python -m pylint --disable=C0111,R1705,E0401,R0201 --const-naming-style=any file1.py file2.py
 ```
 
 The program should output something similar to the following, where pylint error is listed, along with it's filename, line number, and column number (where applicable).:
 
 ```shell
-$ python -m pylint --disable=C0111,R1705,E0401,R0201 api.py app.py models/object.py
+$ python -m pylint --disable=C0111,R1705,E0401,R0201 --const-naming-style=any api.py app.py models/object.py
  ************* Module object
  models/object.py:9: convention (C0326, bad-whitespace, ) Exactly one space required after :
          if name in objects.keys():    return objects[name], 200
@@ -107,7 +107,7 @@ Overall, this method is more complex and requires using platform-specific ways o
 
 #### Running with all checks enabled
 
-To run with all checks, remove the `--disable=...` flag from the command:
+To run with all checks, remove the `--disable=...` and `--const-naming-style=any` flags from the command:
 
 ```shell
 python -m pylint file1.py file2.py
