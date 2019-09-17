@@ -28,7 +28,7 @@ project/
 └── run_pylint.py
 ```
 
-then I can run checkstyle on every `.py` file in the project directory (except for the script):
+then I can run `pylint` on every `.py` file in the project directory (except for the script):
 
 ```shell
 python run_pylint.py
