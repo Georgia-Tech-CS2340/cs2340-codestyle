@@ -16,7 +16,13 @@ In Fall 2019 CS2340, students have the option to use either Python Flask or Java
 
 Python code style is checked using [Pylint](https://www.pylint.org/), which enforces [PEP-8](https://www.python.org/dev/peps/pep-0008/) style guidelines, widely regarded as best style practices in Python.
 
-#### Installation
+#### 📚 Features
+
+- Finds all `.py` files in the given path and runs `pylint` on them
+- Includes class-specific check disables and configures `pylint`
+- Checks for `pylint` being installed
+
+#### 💿 Installation
 
 Once Python/`pip` are installed as a part of installing the required software to develop using Flask, Pylint can be installed by using pip:
 
@@ -24,7 +30,7 @@ Once Python/`pip` are installed as a part of installing the required software to
 pip install pylint
 ```
 
-#### Syntax
+#### ⁉ Syntax
 
 ```shell
 $ python run_pylint.py -h
@@ -42,7 +48,7 @@ optional arguments:
   --all, -a, --strict   enables all checks (strict mode)
 ```
 
-#### Example Run
+#### 🏃 Example Run
 
 ```shell
 $ python run_pylint.py --root ./flask -v
@@ -71,11 +77,20 @@ Your code has been rated at 8.79/10 [raw score: 8.79/10] (previous run: 3.48/10,
 
 Java code style is checked using [Checkstyle](https://checkstyle.org/) using a custom-created configuration file based off of the one used in CS 1332, Data Structures & Algorithms.
 
-#### Installation
+#### 📚 Features
+
+- Finds all `.java` files in the given path and runs Checkstyle on them
+- Searches for and downloads the checkstyle JAR and CS 2340 configuration file automatically
+- Adds the checkstyle JAR to the `.gitignore` file, or creates a new one
+- Checks for Java being installed
+- Calculates code quality score using error count and overall statement count
+  - Scans Java code and counts number of statements
+
+#### 💿 Installation
 
 Python must be installed & added to the `PATH` to run the script. Instructions are available [here](https://geek-university.com/python/add-python-to-the-windows-path/). Additionally, Java must be installed and added to the `PATH`.
 
-#### Syntax
+#### ⁉ Syntax
 
 ```shell
 $ python run_checkstyle.py -h
@@ -90,7 +105,7 @@ optional arguments:
   --verbose, -v         whether to display additional output
 ```
 
-#### Example Run
+#### 🏃 Example Run
 
 ```shell
 $ python run_checkstyle.py --root ./swing -v
