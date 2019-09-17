@@ -1,6 +1,6 @@
 # Python / `pylint`
 
-For Python, [Pylint](https://www.pylint.org/) is used, which is a static code analysis tool and linter for Python that ensures code is idiomatic and follows Python best practices such as [PEP-8](https://www.python.org/dev/peps/pep-0008/). It is also used to check code for errors and can help prevent difficult-to-find runtime bugs. In this, class, **we have disabled certain pylint checks to make the checks less strict**. If desired, these checks can be re-enabled to check for all pylint categories (more details below). There are a few different ways of running pylint, each of which are detailed below.
+For Python, [Pylint](https://www.pylint.org/) is used, which is a static code analysis tool and linter for Python that ensures code is idiomatic and follows Python best practices such as [PEP-8](https://www.python.org/dev/peps/pep-0008/). It is also used to check code for errors and can help prevent difficult-to-find runtime bugs. In this class, **we have disabled certain pylint checks to make the checks less strict**. If desired, these checks can be re-enabled to check for all pylint categories (more details below). There are a few different ways of running pylint, each of which are detailed below.
 
 ## Running `pylint` with Script *(Recommended)*
 
