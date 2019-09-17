@@ -198,7 +198,7 @@ def assemble_score(files, checkstyle_output):
     errors = count_errors(checkstyle_output)
     statements = 0
     for filename in files:
-        statements = count_statements(filename)
+        statements += count_statements(filename)
 
     if statements == 0:
         return 10.0
@@ -253,9 +253,8 @@ def reporthook(blocknum, blocksize, totalsize):
 
     readsofar = blocknum * blocksize
     if totalsize > 0:
-        percent = readsofar * 1e2 / totalsize
-        progress = "\r%5.1f%% %*d / %d" % (
-            percent, len(str(totalsize)), readsofar, totalsize)
+        percent = min(readsofar * 1e2 / totalsize, 1e2)
+        progress = "\r{:5.1f}% {:d} / {:d}".format(percent, min(totalsize, readsofar), totalsize)
         sys.stdout.write(progress)
         if readsofar >= totalsize:
             sys.stdout.write("\n")
