@@ -32,6 +32,7 @@ STATEMENT_REGEX = r"[^;]+?;"
 AFTER_BRACE_REGEX = r"{\s*;"
 EMPTY_STATEMENT_REGEX = r"^\s*;"
 CHECKSTYLE_OUTPUT_REGEX = r"^\[[A-Z]+\] (.+?):\d+(?::\d+?)?:"
+ERROR_TEXT_REGEX = r"CheckstyleException: Exception was thrown while processing .+\.java"
 SCORE_FORMAT = """Your code has been rated at {:.2f}/10 [raw score: {:.2f}/10]"""
 
 # Gitignore analysis
@@ -90,7 +91,7 @@ def main(root=None, verbose=False):
     print(output)
 
     # Print score
-    score = assemble_score(files, output)
+    score = 0 if re.search(ERROR_TEXT_REGEX, output) else assemble_score(files, output)
     score_output = SCORE_FORMAT.format(max(score, 0), score)
     print(len(score_output) * "-")
     print(score_output)
@@ -282,8 +283,8 @@ def run_checkstyle(files, jar_path=None, xml_path=None):
         return ""
 
     args = BASE_PROCESS + [jar_path, "-c", xml_path] + files
-    result = subprocess.run(args, stdout=PIPE)
-    return result.stdout.decode(sys.stdout.encoding)
+    result = subprocess.run(args, stdout=PIPE, stderr=PIPE)
+    return result.stdout.decode(sys.stdout.encoding) + result.stderr.decode(sys.stderr.encoding)
 
 
 def find_files(path, extension):
