@@ -107,10 +107,14 @@ def add_to_gitignore(filename):
         return False, ""
 
     repo_relative_folder = os.path.dirname(filename)
-    result = subprocess.run(GIT_REPO_COMMAND, stdout=PIPE, cwd=repo_relative_folder)
+    result = subprocess.run(GIT_REPO_COMMAND, stdout=PIPE, stderr=PIPE, cwd=repo_relative_folder)
     repo_root = result.stdout.decode(sys.stdout.encoding).strip()
+    error = result.stderr.decode(sys.stderr.encoding).strip()
 
-    if GIT_REPO_FAILED_SUBSTRING in repo_root:
+    if GIT_REPO_FAILED_SUBSTRING in repo_root or error:
+        return False, ""
+
+    if not os.path.exists(repo_root):
         return False, ""
 
     # Clean path
@@ -158,8 +162,9 @@ def is_ignored(regex, cwd=None):
     Determines whether the given file is ignored in its containing git repository
     """
 
-    result = subprocess.run(IGNORED_FILE_COMMAND, stdout=PIPE, cwd=cwd)
+    result = subprocess.run(IGNORED_FILE_COMMAND, stdout=PIPE, stderr=PIPE, cwd=cwd)
     output = result.stdout.decode(sys.stdout.encoding)
+    output += result.stderr.decode(sys.stderr.encoding)
     for line in output.splitlines():
         match = re.search(IGNORED_FILE_REGEX, line)
         if match:
