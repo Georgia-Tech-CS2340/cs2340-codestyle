@@ -150,6 +150,7 @@ def print_crash_info(e):
     """
     Prints system/error information in the case of an unexpected crash
     """
+
     warnings.filterwarnings("ignore", category=DeprecationWarning)
 
     print("An unexpected error has ocurred in the pylint script")
