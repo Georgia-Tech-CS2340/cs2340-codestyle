@@ -8,6 +8,9 @@ import argparse
 import urllib.request
 import sys
 import re
+import datetime
+import platform
+import warnings
 import subprocess
 from subprocess import PIPE
 from shutil import which
@@ -68,34 +71,38 @@ def main(root=None, verbose=False):
         print(NO_JAVA_TEXT)
         return
 
-    # Assemble dependencies
     print()
-    xml_path, _ = find_or_download(CHECKSTYLE_XML_NAME, CHECKSTYLE_XML_URL)
-    jar_path, jar_downloaded = find_or_download(CHECKSTYLE_JAR_NAME, CHECKSTYLE_JAR_URL)
-    if jar_downloaded:
-        result, mode = add_to_gitignore(jar_path)
-        if result:
-            print(ADDED_GITIGNORE_TEXT if mode == "add" else MODIFIED_GITIGNORE_TEXT)
+    try:
+        # Assemble dependencies
+        xml_path, _ = find_or_download(CHECKSTYLE_XML_NAME, CHECKSTYLE_XML_URL)
+        jar_path, jar_downloaded = find_or_download(CHECKSTYLE_JAR_NAME, CHECKSTYLE_JAR_URL)
+        if jar_downloaded:
+            result, mode = add_to_gitignore(jar_path)
+            if result:
+                print(ADDED_GITIGNORE_TEXT if mode == "add" else MODIFIED_GITIGNORE_TEXT)
 
-    path = os.path.abspath(root) if root is not None else os.getcwd()
-    files = find_files(path, JAVA_EXTENSION)
+        path = os.path.abspath(root) if root is not None else os.getcwd()
+        files = find_files(path, JAVA_EXTENSION)
 
-    print("Running Checkstyle on {} files:".format(len(files)))
-    # Print each file in verbose mode
-    if verbose:
-        for file in files:
-            print(" - {}".format(file))
+        print("Running Checkstyle on {} files:".format(len(files)))
+        # Print each file in verbose mode
+        if verbose:
+            for file in files:
+                print(" - {}".format(file))
 
-    output = run_checkstyle(files, jar_path=jar_path, xml_path=xml_path)
-    print()
-    print(output)
+        output = run_checkstyle(files, jar_path=jar_path, xml_path=xml_path)
+        print()
+        print(output)
 
-    # Print score
-    score = 0 if re.search(ERROR_TEXT_REGEX, output) else assemble_score(files, output)
-    score_output = SCORE_FORMAT.format(max(score, 0), score)
-    print(len(score_output) * "-")
-    print(score_output)
-    print()
+        # Print score
+        score = 0 if re.search(ERROR_TEXT_REGEX, output) else assemble_score(files, output)
+        score_output = SCORE_FORMAT.format(max(score, 0), score)
+        print(len(score_output) * "-")
+        print(score_output)
+        print()
+
+    except Exception as e:
+        print_crash_info(e)
 
 
 def add_to_gitignore(filename):
@@ -141,14 +148,17 @@ def find_gitignore(repo_root, top_folder):
     the tree until the repo_root is found, or None if not found
     """
 
-    repo_root = os.path.normpath(repo_root)
-    current_path = os.path.normpath(top_folder)
-    while len(current_path) >= len(repo_root):
-        gitignore_path = os.path.join(current_path, GITIGNORE)
-        if os.path.exists(gitignore_path):
-            return gitignore_path
+    try:
+        repo_root = os.path.normpath(repo_root)
+        current_path = os.path.normpath(top_folder)
+        while len(current_path) >= len(repo_root):
+            gitignore_path = os.path.join(current_path, GITIGNORE)
+            if os.path.exists(gitignore_path):
+                return gitignore_path
 
-        current_path = os.path.dirname(current_path)
+            current_path = os.path.dirname(current_path)
+    except:
+        return None
 
     return None
 
@@ -158,14 +168,17 @@ def is_ignored(regex, cwd=None):
     Determines whether the given file is ignored in its containing git repository
     """
 
-    result = subprocess.run(IGNORED_FILE_COMMAND, stdout=PIPE, cwd=cwd)
-    output = result.stdout.decode(sys.stdout.encoding)
-    for line in output.splitlines():
-        match = re.search(IGNORED_FILE_REGEX, line)
-        if match:
-            line_filename = match.group(1)
-            if re.search(regex, line_filename):
-                return True
+    try:
+        result = subprocess.run(IGNORED_FILE_COMMAND, stdout=PIPE, cwd=cwd)
+        output = result.stdout.decode(sys.stdout.encoding)
+        for line in output.splitlines():
+            match = re.search(IGNORED_FILE_REGEX, line)
+            if match:
+                line_filename = match.group(1)
+                if re.search(regex, line_filename):
+                    return True
+    except:
+        return False
 
     return False
 
@@ -204,7 +217,10 @@ def assemble_score(files, checkstyle_output):
     if statements == 0:
         return 10.0
 
-    return 10.0 - ((float(5 * errors) / statements) * 10)
+    try:
+        return 10.0 - ((float(5 * errors) / statements) * 10)
+    except:
+        return 10.0
 
 
 def count_errors(checkstyle_output):
@@ -213,12 +229,14 @@ def count_errors(checkstyle_output):
     """
 
     count = 0
-    for line in checkstyle_output.splitlines():
-        if line.startswith("["):
-            if re.match(CHECKSTYLE_OUTPUT_REGEX, line):
-                count += 1
-
-    return count
+    try:
+        for line in checkstyle_output.splitlines():
+            if line.startswith("["):
+                if re.match(CHECKSTYLE_OUTPUT_REGEX, line):
+                    count += 1
+        return count
+    except:
+        return count
 
 
 def count_statements(filename):
@@ -231,16 +249,22 @@ def count_statements(filename):
     if not os.path.exists(filename):
         return 0
 
+
     count = 0
-    with open(filename, "r+") as java_file:
-        contents = java_file.read()
-        contents = re.sub(MULTILINE_COMMENT_REGEX, "", contents)
-        contents = re.sub(SINGLELINE_COMMENT_REGEX, "", contents)
-        for match in re.finditer(STATEMENT_REGEX, contents):
-            statement_candidate = match.group()
-            if not re.search(AFTER_BRACE_REGEX, statement_candidate) and not re.search(
-                    EMPTY_STATEMENT_REGEX, statement_candidate):
-                count += 1
+    try:
+        with open(filename, "r+") as java_file:
+            contents = java_file.read()
+            contents = re.sub(MULTILINE_COMMENT_REGEX, "", contents)
+            contents = re.sub(SINGLELINE_COMMENT_REGEX, "", contents)
+            for match in re.finditer(STATEMENT_REGEX, contents):
+                statement_candidate = match.group()
+                if not re.search(AFTER_BRACE_REGEX, statement_candidate) and not re.search(
+                        EMPTY_STATEMENT_REGEX, statement_candidate):
+                    count += 1
+        return count
+    except:
+        return count
+
 
     return count
 
@@ -284,8 +308,11 @@ def run_checkstyle(files, jar_path=None, xml_path=None):
         return ""
 
     args = BASE_PROCESS + [jar_path, "-c", xml_path] + files
-    result = subprocess.run(args, stdout=PIPE, stderr=PIPE)
-    return result.stdout.decode(sys.stdout.encoding) + result.stderr.decode(sys.stderr.encoding)
+    try:
+        result = subprocess.run(args, stdout=PIPE, stderr=PIPE)
+        return result.stdout.decode(sys.stdout.encoding) + result.stderr.decode(sys.stderr.encoding)
+    except:
+        return ""
 
 
 def find_files(path, extension):
@@ -293,13 +320,40 @@ def find_files(path, extension):
     Gets a list of every file in the given path that has the given file extension
     """
 
-    file_list = []
-    for root, _, files in os.walk(path):
-        for file in files:
-            if file.endswith(extension):
-                file_list.append(os.path.join(root, file))
+    try:
+        file_list = []
+        for root, _, files in os.walk(path):
+            for file in files:
+                if file.endswith(extension):
+                    file_list.append(os.path.join(root, file))
+    except:
+        return []
 
     return file_list
+
+
+def print_crash_info(e):
+    """
+    Prints system/error information in the case of an unexpected crash
+    """
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+    print("An unexpected error has ocurred in the checkstyle script")
+    print("===================================================================")
+    print("Please make a private post on Piazza with the following information")
+    print(e)
+    print("===================================================================")
+    print("Time: {}".format(str(datetime.datetime.now())))
+    print("Script: run_checkstyle.py")
+    print("Python version: {} => {}".format(sys.version, sys.version_info))
+    print("Platform: {}".format(sys.platform))
+    print("Architecture: {}".format(platform.architecture()))
+    print("Distribution: {}".format(platform.dist()))
+    print("Processor: {}".format(platform.processor()))
+    print("System: {}".format(platform.system()))
+    print("uname: {}".format(platform.uname()))
+    print("CPU Count: {}".format(os.cpu_count()))
+    print("===================================================================")
 
 
 def bootstrap():
