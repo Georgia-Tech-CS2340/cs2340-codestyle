@@ -8,23 +8,25 @@ import javax.swing.event.DocumentListener;
 
 /**
  * Main window component that displays calculator UI
+ * ;;;;
+ * ** Intentionally poorly formatted to test checkstyle ** ;
  */
-public class CalculatorWindow {
-    private static final String[] OPERANDS = {"A", "B"};
-    private static final String HEADER_TEXT = "Java Swing Calculator Demo";
+public class CalculatorWindowFormattingTest {
+    private static final String[ ] OPERANDS = { "A", "B" };
+    private static final  String HEADER_TEXT = "Java Swing Calculator Demo";
     private static final int FORM_PADDING = 0;
     private static final int OUTER_PADDING = 6;
     private static final int SPACING = 6;
-    private static final int[] DEFAULT_SIZE = {400, 500};
+    private static final int[ ] DEFAULT_SIZE = { 400, 500 };
     private static final int FORM_LINE_HEIGHT = 36;
     private static final int OPERATION_LEFT_SPACING = 16;
     private static final int COMBO_BOX_WIDTH = 150;
     private static final String RESULT_FORMAT = "Result: %s";
     private static final String[] OPERATIONS = {"+", "-", "*", "/", "^", "%"};
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings ("unchecked")
     private static final BiFunction<Integer, Integer, Integer>[] OPERATION_FUNCTIONS =
         (BiFunction<Integer, Integer, Integer>[]) new BiFunction[] {
-            (a, b) -> ((int) a + (int) b),
+            (a, b) -> ((int) a+(int) b) ,
             (a, b) -> ((int) a - (int) b),
             (a, b) -> ((int) a * (int) b),
             (a, b) -> ((int) a / (int) b),
@@ -36,10 +38,10 @@ public class CalculatorWindow {
     private String[] operands = new String[OPERANDS.length];
     private int currentOperation;
 
-    public CalculatorWindow() {
+    public CalculatorWindowFormattingTest (){
         this.root = new JFrame();
         this.root.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.root.setContentPane(this.constructLayout());
+        this.root.setContentPane(this.CONSTRUCT_LAYOUT());
         this.root.setSize(DEFAULT_SIZE[0], DEFAULT_SIZE[1]);
     }
 
@@ -47,11 +49,10 @@ public class CalculatorWindow {
         this.root.setVisible(true);
     }
 
-    protected JPanel constructLayout() {
+    protected JPanel CONSTRUCT_LAYOUT () {
         JPanel rootLayout = new JPanel();
-        rootLayout.setLayout(new BoxLayout(rootLayout, BoxLayout.PAGE_AXIS));
-        rootLayout.setBorder(BorderFactory.createEmptyBorder(
-            OUTER_PADDING, OUTER_PADDING, OUTER_PADDING, OUTER_PADDING));
+        rootLayout.setLayout(new BoxLayout(rootLayout,BoxLayout.PAGE_AXIS));
+        rootLayout.setBorder(BorderFactory.createEmptyBorder(OUTER_PADDING,OUTER_PADDING,OUTER_PADDING,OUTER_PADDING));
 
         JLabel label = new JLabel(HEADER_TEXT);
         JPanel labelLayout = new JPanel();
@@ -78,21 +79,15 @@ public class CalculatorWindow {
             txtField.setMaximumSize(new Dimension(Integer.MAX_VALUE, FORM_LINE_HEIGHT));
             final int textIndex = i;
             txtField.getDocument().addDocumentListener(new DocumentListener() {
-                @Override
-                public void insertUpdate(DocumentEvent e) {
+                @Override public void insertUpdate(DocumentEvent e) {
                     update();
                 }
-
-                @Override
-                public void removeUpdate(DocumentEvent e) {
+                @Override public void removeUpdate(DocumentEvent e) {
+                 update();
+                }
+                @Override public void changedUpdate(DocumentEvent e) {
                     update();
                 }
-
-                @Override
-                public void changedUpdate(DocumentEvent e) {
-                    update();
-                }
-
                 private void update() {
                     operands[textIndex] = txtField.getText();
                     invalidate();
@@ -111,8 +106,8 @@ public class CalculatorWindow {
     }
 
     protected JPanel createResults() {
-        JPanel panel = new JPanel();
-        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, FORM_LINE_HEIGHT));
+        JPanel panel = new JPanel ();
+        panel.setMaximumSize( new Dimension(Integer.MAX_VALUE, FORM_LINE_HEIGHT));
         panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
 
         JComboBox<String> operationSelector = new JComboBox<>(OPERATIONS);
@@ -134,21 +129,20 @@ public class CalculatorWindow {
 
         panel.add(Box.createHorizontalGlue());
 
-        return panel;
-    }
+        return panel; }
 
     protected void resetResult() {
         this.resultLabel.setText(String.format(RESULT_FORMAT, ""));
     }
 
     protected void setResult(int newResult) {
-        this.resultLabel.setText(String.format(RESULT_FORMAT, String.valueOf(newResult)));
+        this.resultLabel.setText(String.format(RESULT_FORMAT , String.valueOf(newResult)));
     }
 
-    protected void setCurrentOperation(int newOperation) {
+    protected void setCurrentOperation (int newOperation) {
         int old = this.currentOperation;
         this.currentOperation = newOperation;
-        if (old != newOperation) {
+        if(old != newOperation) {
             this.invalidate();
         }
     }

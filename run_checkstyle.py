@@ -3,20 +3,30 @@ Checkstyle script to automatically run Checkstyle on every java source file with
 the current working directory (using class-specific options)
 """
 
+__author__ = "CS 2340 TAs"
+__version__ = "1.0"
+
+# pylint: disable=wrong-import-position
+# Python version check
+import sys
+if sys.version_info[0] < 3:
+    print(
+        """This script requires Python 3 to run:
+https://www.python.org/downloads/
+""")
+    sys.exit()
 import os
 import argparse
 import urllib.request
-import sys
 import re
 import datetime
 import platform
 import warnings
+import functools
+import traceback
 import subprocess
 from subprocess import PIPE
 from shutil import which
-
-__author__ = "CS 2340 TAs"
-__version__ = "1.0"
 
 DESCRIPTION = "Checkstyle script to run checkstyle on every .java file in the CWD"
 JAVA_EXTENSION = ".java"
@@ -24,9 +34,10 @@ BASE_PROCESS = ["java", "-jar"]
 CHECKSTYLE_JAR_NAME = "checkstyle-8.24-all.jar"
 CHECKSTYLE_JAR_URL = "https://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.24/checkstyle-8.24-all.jar" # pylint: disable=line-too-long
 CHECKSTYLE_JAR_GITIGNORE = "checkstyle-*.jar"
-CHECKSTYLE_JAR_PATTERN = "checkstyle-.*\.jar"
+CHECKSTYLE_JAR_PATTERN = r"checkstyle-.*\.jar"
 CHECKSTYLE_XML_NAME = "cs2340_checks.xml"
 CHECKSTYLE_XML_URL = "https://raw.githubusercontent.com/jazevedo620/cs2340-codestyle/master/cs2340_checks.xml" # pylint: disable=line-too-long
+SENTINEL = object()
 
 # Scoring
 MULTILINE_COMMENT_REGEX = r"\/\*([\S\s]+?)\*\/"
@@ -61,6 +72,55 @@ MODIFIED_GITIGNORE_TEXT = """
 """.lstrip()
 
 
+def crash_reporter(func=None, fallback=SENTINEL):
+    """
+    Prints system/error information in the case of an unexpected crash during
+    the execution of func
+    """
+
+    def _decorate(function):
+        # closes over func/fallback
+        @functools.wraps(function)
+        def crash_handler(*args, **kwargs):
+            try:
+                return function(*args, **kwargs)
+            # pylint: disable=broad-except
+            except Exception:
+                # Disable platform.dist() deprecation warning
+                warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+                print("An unexpected error has occurred in the checkstyle script")
+                print("===================================================================")
+                print("Please make a private post on Piazza with the following information")
+                print("Error during {}".format(function.__name__))
+                print(traceback.format_exc())
+                print("===================================================================")
+                print("Time: {}".format(str(datetime.datetime.now())))
+                print("Script: run_checkstyle.py")
+                print("Python version: {} => {}".format(sys.version, sys.version_info))
+                print("Platform: {}".format(sys.platform))
+                print("Architecture: {}".format(platform.architecture()))
+                print("Distribution: {}".format(platform.dist()))
+                print("Processor: {}".format(platform.processor()))
+                print("System: {}".format(platform.system()))
+                print("uname: {}".format(platform.uname()))
+                print("CPU Count: {}".format(os.cpu_count()))
+                print("===================================================================")
+
+                if fallback is SENTINEL:
+                    # Unrecoverable error
+                    sys.exit()
+
+                return fallback
+        return crash_handler
+
+    if func:
+        return _decorate(func)
+
+    return _decorate
+
+
+@crash_reporter
 def main(root=None, verbose=False):
     """
     Runs the main checkstyle script and parses/redirects output
@@ -71,40 +131,36 @@ def main(root=None, verbose=False):
         print(NO_JAVA_TEXT)
         return
 
+    # Assemble dependencies
     print()
-    try:
-        # Assemble dependencies
-        xml_path, _ = find_or_download(CHECKSTYLE_XML_NAME, CHECKSTYLE_XML_URL)
-        jar_path, jar_downloaded = find_or_download(CHECKSTYLE_JAR_NAME, CHECKSTYLE_JAR_URL)
-        if jar_downloaded:
-            result, mode = add_to_gitignore(jar_path)
-            if result:
-                print(ADDED_GITIGNORE_TEXT if mode == "add" else MODIFIED_GITIGNORE_TEXT)
+    xml_path, _ = find_or_download(CHECKSTYLE_XML_NAME, CHECKSTYLE_XML_URL)
+    jar_path, jar_downloaded = find_or_download(CHECKSTYLE_JAR_NAME, CHECKSTYLE_JAR_URL)
+    if jar_downloaded:
+        result, mode = add_to_gitignore(jar_path)
+        if result:
+            print(ADDED_GITIGNORE_TEXT if mode == "add" else MODIFIED_GITIGNORE_TEXT)
 
-        path = os.path.abspath(root) if root is not None else os.getcwd()
-        files = find_files(path, JAVA_EXTENSION)
+    path = os.path.abspath(root) if root is not None else os.getcwd()
+    files = find_files(path, JAVA_EXTENSION)
 
-        print("Running Checkstyle on {} files:".format(len(files)))
-        # Print each file in verbose mode
-        if verbose:
-            for file in files:
-                print(" - {}".format(file))
+    print("Running Checkstyle on {} files:".format(len(files)))
+    # Print each file in verbose mode
+    if verbose:
+        for file in files:
+            print(" - {}".format(file))
 
-        output = run_checkstyle(files, jar_path=jar_path, xml_path=xml_path)
-        print()
-        print(output)
-
-        # Print score
-        score = 0 if re.search(ERROR_TEXT_REGEX, output) else assemble_score(files, output)
-        score_output = SCORE_FORMAT.format(max(score, 0), score)
-        print(len(score_output) * "-")
-        print(score_output)
-        print()
-
-    except Exception as e:
-        print_crash_info(e)
+    output = run_checkstyle(files, jar_path=jar_path, xml_path=xml_path)
+    print()
+    print(output)
+    # Print score
+    score = 0 if re.search(ERROR_TEXT_REGEX, output) else assemble_score(files, output)
+    score_output = SCORE_FORMAT.format(max(score, 0), score)
+    print(len(score_output) * "-")
+    print(score_output)
+    print()
 
 
+@crash_reporter(fallback=(False, ""))
 def add_to_gitignore(filename):
     """
     Adds the given file to the gitignore if applicable/necessary
@@ -146,48 +202,45 @@ def add_to_gitignore(filename):
     return True, "modify"
 
 
+@crash_reporter(fallback=None)
 def find_gitignore(repo_root, top_folder):
     """
     Finds the first .gitignore file starting at the top_folder and walking up
     the tree until the repo_root is found, or None if not found
     """
 
-    try:
-        repo_root = os.path.normpath(repo_root)
-        current_path = os.path.normpath(top_folder)
-        while len(current_path) >= len(repo_root):
-            gitignore_path = os.path.join(current_path, GITIGNORE)
-            if os.path.exists(gitignore_path):
-                return gitignore_path
+    repo_root = os.path.normpath(repo_root)
+    current_path = os.path.normpath(top_folder)
+    while len(current_path) >= len(repo_root):
+        gitignore_path = os.path.join(current_path, GITIGNORE)
+        if os.path.exists(gitignore_path):
+            return gitignore_path
 
-            current_path = os.path.dirname(current_path)
-    except:
-        return None
+        current_path = os.path.dirname(current_path)
 
     return None
 
 
+@crash_reporter(fallback=False)
 def is_ignored(regex, cwd=None):
     """
     Determines whether the given file is ignored in its containing git repository
     """
 
-    try:
-        result = subprocess.run(IGNORED_FILE_COMMAND, stdout=PIPE, stderr=PIPE, cwd=cwd)
-        output = result.stdout.decode(sys.stdout.encoding)
-        output += result.stderr.decode(sys.stderr.encoding)
-        for line in output.splitlines():
-            match = re.search(IGNORED_FILE_REGEX, line)
-            if match:
-                line_filename = match.group(1)
-                if re.search(regex, line_filename):
-                    return True
-    except:
-        return False
+    result = subprocess.run(IGNORED_FILE_COMMAND, stdout=PIPE, stderr=PIPE, cwd=cwd)
+    output = result.stdout.decode(sys.stdout.encoding)
+    output += result.stderr.decode(sys.stderr.encoding)
+    for line in output.splitlines():
+        match = re.search(IGNORED_FILE_REGEX, line)
+        if match:
+            line_filename = match.group(1)
+            if re.search(regex, line_filename):
+                return True
 
     return False
 
 
+@crash_reporter
 def find_or_download(filename, url):
     """
     Finds a file with the given filename in the same directory as the current
@@ -208,6 +261,7 @@ def find_or_download(filename, url):
     return target_path, True
 
 
+@crash_reporter(fallback=10.0)
 def assemble_score(files, checkstyle_output):
     """
     Calculates code "score" using the same formula as pylint for consistency:
@@ -222,28 +276,25 @@ def assemble_score(files, checkstyle_output):
     if statements == 0:
         return 10.0
 
-    try:
-        return 10.0 - ((float(5 * errors) / statements) * 10)
-    except:
-        return 10.0
+    return 10.0 - ((float(5 * errors) / statements) * 10)
 
 
+@crash_reporter(fallback=0)
 def count_errors(checkstyle_output):
     """
     Counts total checkstyle errors given the checkstyle stdout
     """
 
     count = 0
-    try:
-        for line in checkstyle_output.splitlines():
-            if line.startswith("["):
-                if re.match(CHECKSTYLE_OUTPUT_REGEX, line):
-                    count += 1
-        return count
-    except:
-        return count
+    for line in checkstyle_output.splitlines():
+        if line.startswith("["):
+            if re.match(CHECKSTYLE_OUTPUT_REGEX, line):
+                count += 1
+
+    return count
 
 
+@crash_reporter(fallback=0)
 def count_statements(filename):
     """
     Counts the number of Java statements included in a file
@@ -254,24 +305,35 @@ def count_statements(filename):
     if not os.path.exists(filename):
         return 0
 
-
     count = 0
-    try:
-        with open(filename, "r+") as java_file:
-            contents = java_file.read()
-            contents = re.sub(MULTILINE_COMMENT_REGEX, "", contents)
-            contents = re.sub(SINGLELINE_COMMENT_REGEX, "", contents)
-            for match in re.finditer(STATEMENT_REGEX, contents):
-                statement_candidate = match.group()
-                if not re.search(AFTER_BRACE_REGEX, statement_candidate) and not re.search(
-                        EMPTY_STATEMENT_REGEX, statement_candidate):
-                    count += 1
-        return count
-    except:
-        return count
-
+    with open(filename, "r+") as java_file:
+        contents = remove_comments(java_file.read())
+        for match in re.finditer(STATEMENT_REGEX, contents):
+            statement_candidate = match.group()
+            if not is_invalid_statement(statement_candidate):
+                count += 1
 
     return count
+
+
+def remove_comments(java_source):
+    """
+    First removes multiline comments using regex before removing single line
+    comments. Might not catch all due to regex-based parsing
+    """
+
+    without_multiline = re.sub(MULTILINE_COMMENT_REGEX, "", java_source)
+    return re.sub(SINGLELINE_COMMENT_REGEX, "", without_multiline)
+
+
+def is_invalid_statement(statement):
+    """
+    Filters out whether the statement candidate is valid or not. Rejects "statements"
+    such as: "{ ;" and " ;"
+    """
+
+    return (re.search(AFTER_BRACE_REGEX, statement)
+            or re.search(EMPTY_STATEMENT_REGEX, statement))
 
 
 def report_hook(block_num, block_size, total_size):
@@ -293,6 +355,7 @@ def report_hook(block_num, block_size, total_size):
         sys.stdout.write("read {:d}\n".format(read_progress))
 
 
+@crash_reporter
 def run_checkstyle(files, jar_path=None, xml_path=None):
     """
     Runs checkstyle on every file specified using the class-specific
@@ -313,53 +376,23 @@ def run_checkstyle(files, jar_path=None, xml_path=None):
         return ""
 
     args = BASE_PROCESS + [jar_path, "-c", xml_path] + files
-    try:
-        result = subprocess.run(args, stdout=PIPE, stderr=PIPE)
-        return result.stdout.decode(sys.stdout.encoding) + result.stderr.decode(sys.stderr.encoding)
-    except:
-        return ""
+    result = subprocess.run(args, stdout=PIPE, stderr=PIPE)
+    return result.stdout.decode(sys.stdout.encoding) + result.stderr.decode(sys.stderr.encoding)
 
 
+@crash_reporter
 def find_files(path, extension):
     """
     Gets a list of every file in the given path that has the given file extension
     """
 
-    try:
-        file_list = []
-        for root, _, files in os.walk(path):
-            for file in files:
-                if file.endswith(extension):
-                    file_list.append(os.path.join(root, file))
-    except:
-        return []
+    file_list = []
+    for root, _, files in os.walk(path):
+        for file in files:
+            if file.endswith(extension):
+                file_list.append(os.path.join(root, file))
 
     return file_list
-
-
-def print_crash_info(e):
-    """
-    Prints system/error information in the case of an unexpected crash
-    """
-
-    warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-    print("An unexpected error has ocurred in the checkstyle script")
-    print("===================================================================")
-    print("Please make a private post on Piazza with the following information")
-    print(e)
-    print("===================================================================")
-    print("Time: {}".format(str(datetime.datetime.now())))
-    print("Script: run_checkstyle.py")
-    print("Python version: {} => {}".format(sys.version, sys.version_info))
-    print("Platform: {}".format(sys.platform))
-    print("Architecture: {}".format(platform.architecture()))
-    print("Distribution: {}".format(platform.dist()))
-    print("Processor: {}".format(platform.processor()))
-    print("System: {}".format(platform.system()))
-    print("uname: {}".format(platform.uname()))
-    print("CPU Count: {}".format(os.cpu_count()))
-    print("===================================================================")
 
 
 def bootstrap():

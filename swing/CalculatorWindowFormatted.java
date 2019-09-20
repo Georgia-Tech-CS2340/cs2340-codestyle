@@ -8,12 +8,10 @@ import javax.swing.event.DocumentListener;
 
 /**
  * Main window component that displays calculator UI
- * ;;;;
- * ** Intentionally poorly formatted to test checkstyle ** ;
  */
-public class CalculatorWindowFormattingTest {
+public class CalculatorWindow {
     private static final String[] OPERANDS = {"A", "B"};
-    private static final  String HEADER_TEXT = "Java Swing Calculator Demo";
+    private static final String HEADER_TEXT = "Java Swing Calculator Demo";
     private static final int FORM_PADDING = 0;
     private static final int OUTER_PADDING = 6;
     private static final int SPACING = 6;
@@ -26,7 +24,7 @@ public class CalculatorWindowFormattingTest {
     @SuppressWarnings("unchecked")
     private static final BiFunction<Integer, Integer, Integer>[] OPERATION_FUNCTIONS =
         (BiFunction<Integer, Integer, Integer>[]) new BiFunction[] {
-            (a, b) -> ((int) a + (int) b) ,
+            (a, b) -> ((int) a + (int) b),
             (a, b) -> ((int) a - (int) b),
             (a, b) -> ((int) a * (int) b),
             (a, b) -> ((int) a / (int) b),
@@ -38,10 +36,10 @@ public class CalculatorWindowFormattingTest {
     private String[] operands = new String[OPERANDS.length];
     private int currentOperation;
 
-    public CalculatorWindowFormattingTest(){
+    public CalculatorWindow() {
         this.root = new JFrame();
         this.root.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.root.setContentPane(this.CONSTRUCT_LAYOUT());
+        this.root.setContentPane(this.constructLayout());
         this.root.setSize(DEFAULT_SIZE[0], DEFAULT_SIZE[1]);
     }
 
@@ -49,10 +47,11 @@ public class CalculatorWindowFormattingTest {
         this.root.setVisible(true);
     }
 
-    protected JPanel CONSTRUCT_LAYOUT () {
+    protected JPanel constructLayout() {
         JPanel rootLayout = new JPanel();
-        rootLayout.setLayout(new BoxLayout(rootLayout,BoxLayout.PAGE_AXIS));
-        rootLayout.setBorder(BorderFactory.createEmptyBorder(OUTER_PADDING,OUTER_PADDING,OUTER_PADDING,OUTER_PADDING));
+        rootLayout.setLayout(new BoxLayout(rootLayout, BoxLayout.PAGE_AXIS));
+        rootLayout.setBorder(BorderFactory.createEmptyBorder(
+            OUTER_PADDING, OUTER_PADDING, OUTER_PADDING, OUTER_PADDING));
 
         JLabel label = new JLabel(HEADER_TEXT);
         JPanel labelLayout = new JPanel();
@@ -79,15 +78,21 @@ public class CalculatorWindowFormattingTest {
             txtField.setMaximumSize(new Dimension(Integer.MAX_VALUE, FORM_LINE_HEIGHT));
             final int textIndex = i;
             txtField.getDocument().addDocumentListener(new DocumentListener() {
-                @Override public void insertUpdate(DocumentEvent e) {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
                     update();
                 }
-                @Override public void removeUpdate(DocumentEvent e) {
-                 update();
-                }
-                @Override public void changedUpdate(DocumentEvent e) {
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
                     update();
                 }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    update();
+                }
+
                 private void update() {
                     operands[textIndex] = txtField.getText();
                     invalidate();
@@ -129,7 +134,8 @@ public class CalculatorWindowFormattingTest {
 
         panel.add(Box.createHorizontalGlue());
 
-        return panel; }
+        return panel;
+    }
 
     protected void resetResult() {
         this.resultLabel.setText(String.format(RESULT_FORMAT, ""));

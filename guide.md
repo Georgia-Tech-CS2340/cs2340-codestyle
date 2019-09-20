@@ -1,6 +1,16 @@
 # Python / `pylint`
 
-For Python, [Pylint](https://www.pylint.org/) is used, which is a static code analysis tool and linter for Python that ensures code is idiomatic and follows Python best practices such as [PEP-8](https://www.python.org/dev/peps/pep-0008/). It is also used to check code for errors and can help prevent difficult-to-find runtime bugs. In this class, **we have disabled certain pylint checks to make the checks less strict**. If desired, these checks can be re-enabled to check for all pylint categories (more details below). There are a few different ways of running pylint, each of which are detailed below.
+For Python, [Pylint](https://www.pylint.org/) is used, which is a static code analysis tool and linter for Python that ensures code is idiomatic and follows Python best practices such as [PEP-8](https://www.python.org/dev/peps/pep-0008/). It is also used to check code for errors and can help prevent difficult-to-find runtime bugs. In this class, **we have disabled certain pylint checks to make the checks less strict**. If desired, these checks can be re-enabled to check for all pylint categories (*see **Running with all checks enabled***). There are a few different ways of running pylint, each of which are detailed in the below sections.
+
+Documentation is available on the Python style `pylint` checks for:
+
+- [Pylint docs](http://pylint-messages.wikidot.com/all-codes) - each individual warning/error/refactor
+- [PEP-8 Style guide](https://www.python.org/dev/peps/pep-0008/) - Python best practices for code style
+
+In addition, there are some examples of compliant/noncompliant example code provided:
+
+- [`object.py` (non-compiliant)](https://github.com/jazevedo620/cs2340-codestyle/blob/master/flask/models/object.py) - example Flask `Resource` object with bad formatting
+- [`object_formatted` (compliant)](https://github.com/jazevedo620/cs2340-codestyle/blob/master/flask/models/object_formatted.py) - same as above, plus it passes all pylint checks
 
 ## Running `pylint` with Script *(Recommended)*
 
@@ -12,7 +22,6 @@ A utility script was developed by the CS 2340 TAs to make running pylint on your
 - [Pylint script](https://raw.githubusercontent.com/jazevedo620/cs2340-codestyle/master/run_pylint.py) downloaded
 - `pylint` installed using `pip`:
   - `python -m pip install pylint`
-
 
 ### Running
 
@@ -69,11 +78,19 @@ python run_pylint.py --all
 
 This will likely result in a lower score than without all checks enabled, but **this score will not be used when grading. Only the score that is a result of the standard run will be used**.
 
+#### Running over another directory
+
+To run the script on a directory other than the current working directory, specify a relative or absolute path using `--root path/to/folder`:
+
+```shell
+python run_pylint.py --root path/to/folder
+```
+
 ## Running `pylint` Directly
 
 ### Prerequisites
 
-- Python installed and on the `PATH` [(tutorial on Canvas... complete the "Installing Python" section)](https://gatech.instructure.com/files/7339157/download?download_frd=1)
+- Python **3** installed and on the `PATH` [(tutorial on Canvas... complete the "Installing Python" section)](https://gatech.instructure.com/files/7339157/download?download_frd=1)
 - `pylint` installed using `pip`:
   - `python -m pip install pylint`
 
@@ -130,7 +147,14 @@ Plugins are available for `pylint` for a variety of different editors/IDEs. Some
 
 # Java /  Checkstyle
 
-For Java, [Checkstyle](https://checkstyle.org/) is used, which is a static code analysis tool that helps programmers write Java code that adheres to a coding standard. For this class, *the coding standard is provided* in the form of a Checkstyle configuration file (more details below). As with pylint, there are a few ways of running Checkstyle, each of which are detailed below.
+For Java, [Checkstyle](https://checkstyle.org/) is used, which is a static code analysis tool that helps programmers write Java code that adheres to a coding standard. For this class, *the coding standard is provided* in the form of a Checkstyle configuration file. It can be [downloaded directly from github](https://raw.githubusercontent.com/jazevedo620/cs2340-codestyle/master/cs2340_checks.xml), and is based off of the one used in CS 1332, Data Structures & Algorithms. More details on each check can be found in the [official Checkstyle documentation](https://checkstyle.sourceforge.io/checks.html).
+
+In addition, there are some examples of compliant/noncompliant example code provided:
+
+- [`CalculatorWindow.java` (non-compiliant)](https://github.com/jazevedo620/cs2340-codestyle/blob/master/swing/CalculatorWindow.java) - example Swing application with poor formatting
+- [`CalculatorWindowFormatted.java` (compliant)](https://github.com/jazevedo620/cs2340-codestyle/blob/master/swing/CalculatorWindowFormatted.java) - same as above, plus it passes all Checkstyle checks
+
+As with pylint, there are a few different ways of running Checkstyle, each of which are detailed below.
 
 ## Running Checkstyle with Script *(Recommended)*
 
@@ -139,7 +163,7 @@ A utility script was developed by the CS 2340 TAs to make running Checkstyle on 
 ### Prerequisites
 
 - Java installed and on the `PATH` [(tutorial)](https://www.java.com/en/download/help/path.xml)
-- Python installed and on the `PATH` [(tutorial on Canvas... complete the "Installing Python" section)](https://gatech.instructure.com/files/7339157/download?download_frd=1)
+- Python **3** installed and on the `PATH` [(tutorial on Canvas... complete the "Installing Python" section)](https://gatech.instructure.com/files/7339157/download?download_frd=1)
 - [Checkstyle script](https://raw.githubusercontent.com/jazevedo620/cs2340-codestyle/master/run_checkstyle.py) downloaded
 
 ### Running
@@ -196,6 +220,14 @@ As is shown in the example output, the script will automatically download the ch
 The score given at the bottom is a metric of overall code quality, and is computed using the following formula where `e` is the number of Checkstyle errors/warnings and `n` is the number of Java statements in the scanned code:
 
 ![S(e,n)=10(1-(5e/n))](https://i.imgur.com/cqRVxbc.png)
+
+#### Running over another directory
+
+To run the script on a directory other than the current working directory, specify a relative or absolute path using `--root path/to/folder`:
+
+```shell
+python run_checkstyle.py --root path/to/folder
+```
 
 ## Running Checkstyle Directly
 
