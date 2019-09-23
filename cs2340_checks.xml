@@ -7,17 +7,15 @@
     <!-- Credit to the CS 1332 team for the basis of this checkstyle
     configuration file -->
 
+    <!-- ! Make sure you are using Checkstyle 8.24 for this file ! -->
     <property name="charset" value="UTF-8"/>
     <property name="severity" value="warning"/>
 
-    <!-- Checks for whitespace                               -->
-    <!-- See http://checkstyle.sf.net/config_whitespace.html -->
+    <!-- Whitespace checks -->
     <module name="FileTabCharacter">
         <property name="eachLine" value="true"/>
     </module>
-
     <module name="LineLength">
-        <property name="fileExtensions" value="java"/>
         <property name="max" value="100"/>
         <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
     </module>
@@ -37,7 +35,6 @@
 
         <!-- Checks for imports                              -->
         <!-- See http://checkstyle.sf.net/config_import.html -->
-        <!-- <module name="AvoidStarImport"/> -->
         <module name="IllegalImport"/> <!-- defaults to sun.* packages -->
         <module name="RedundantImport"/>
         <module name="UnusedImports"/>
@@ -46,7 +43,6 @@
         <!-- See http://checkstyle.sf.net/config_sizes.html -->
         <module name="MethodLength"/>
         <module name="ParameterNumber"/>
-
 
         <!-- Checks for whitespace                               -->
         <!-- See http://checkstyle.sf.net/config_whitespace.html -->
@@ -75,14 +71,12 @@
 
         <!-- Checks for common coding problems               -->
         <!-- See http://checkstyle.sf.net/config_coding.html -->
-
         <module name="EmptyStatement"/>
         <module name="IllegalInstantiation"/>
         <module name="InnerAssignment"/>
 
         <module name="MissingSwitchDefault"/>
         <module name="FallThrough"/>
-        <!--<module name="RedundantThrows"/>-->
         <module name="SimplifyBooleanExpression"/>
         <module name="SimplifyBooleanReturn"/>
 

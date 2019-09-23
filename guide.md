@@ -147,7 +147,7 @@ Plugins are available for `pylint` for a variety of different editors/IDEs. Some
 
 # Java /  Checkstyle
 
-For Java, [Checkstyle](https://checkstyle.org/) is used, which is a static code analysis tool that helps programmers write Java code that adheres to a coding standard. For this class, *the coding standard is provided* in the form of a Checkstyle configuration file. It can be [downloaded directly from github](https://raw.githubusercontent.com/jazevedo620/cs2340-codestyle/master/cs2340_checks.xml), and is based off of the one used in CS 1332, Data Structures & Algorithms. More details on each check can be found in the [official Checkstyle documentation](https://checkstyle.sourceforge.io/checks.html).
+For Java, [Checkstyle](https://checkstyle.org/) is used, which is a static code analysis tool that helps programmers write Java code that adheres to a coding standard. For this class, *the coding standard is provided* in the form of a Checkstyle configuration file. It can be [downloaded directly from github](https://raw.githubusercontent.com/jazevedo620/cs2340-codestyle/master/cs2340_checks.xml), and is based off of the one used in CS 1332, Data Structures & Algorithms. **It is important that you run this configuration file on the most recent version of Checkstyle (as of writing this), Checkstyle 8.24.** More details on each check can be found in the [official Checkstyle documentation](https://checkstyle.sourceforge.io/checks.html).
 
 In addition, there are some examples of compliant/noncompliant example code provided:
 
@@ -234,7 +234,7 @@ python run_checkstyle.py --root path/to/folder
 ### Prerequisites
 
 - Java installed and on the `PATH` [(tutorial)](https://www.java.com/en/download/help/path.xml)
-- [checkstyle jar](https://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.24/checkstyle-8.24-all.jar) downloaded and in the same directory as your code
+- [checkstyle jar](https://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.24/checkstyle-8.24-all.jar) (version 8.24) downloaded and in the same directory as your code
 - [configuration file](https://raw.githubusercontent.com/jazevedo620/cs2340-codestyle/master/cs2340_checks.xml) downloaded and in the same directory as your code
 
 > **Note:** the given configuration file has only been tested with the latest version of Checkstyle as of writing this (8.24), so it might break with older versions
@@ -269,6 +269,7 @@ Plugins are available for Checkstyle for a variety of different editors/IDEs. So
 - [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=shengchen.vscode-checkstyle) - vscode plugin runs checkstyle automatically
   - Make sure to follow the instructions at the link to set the `cs2340_checks.xml` as the Checkstyle configuration file
 - [Eclipse](https://checkstyle.org/eclipse-cs/#!/) - Checkstyle integration into Eclipse
-- [IntelliJ IDEA](https://plugins.jetbrains.com/plugin/1065-checkstyle-idea) - JetBrains plugin that adds Checkstyle side pane for realtime and on-demand Checkstyle running
+- [IntelliJ IDEA](https://plugins.jetbrains.com/plugin/1065-checkstyle-idea) - JetBrains plugin that adds Checkstyle side pane for real-time and on-demand Checkstyle running
+  - **Make sure to set the Checkstyle version to 8.24 in the Checkstyle settings** (you may need to update your plugin to see this option appear)
 
 > **Note**: it is recommended to run Checkstyle via the script/directly at least once before submitting each milestone to make sure all errors are caught.

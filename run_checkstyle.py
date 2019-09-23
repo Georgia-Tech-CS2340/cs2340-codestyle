@@ -15,6 +15,7 @@ if sys.version_info[0] < 3:
 https://www.python.org/downloads/
 """)
     sys.exit()
+
 import os
 import argparse
 import urllib.request
