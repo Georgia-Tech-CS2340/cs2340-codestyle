@@ -18,7 +18,7 @@ A utility script was developed by the CS 2340 TAs to make running pylint on your
 
 ### Prerequisites
 
-- Python installed and on the `PATH` [(tutorial on Canvas... complete the "Installing Python" section)](https://gatech.instructure.com/files/7339157/download?download_frd=1)
+- Python **3** installed and on the `PATH` [(tutorial on Canvas... complete the "Installing Python" section)](https://gatech.instructure.com/files/7339157/download?download_frd=1)
 - [Pylint script](https://raw.githubusercontent.com/jazevedo620/cs2340-codestyle/master/run_pylint.py) downloaded
 - `pylint` installed using `pip`:
   - `python -m pip install pylint`
@@ -90,7 +90,7 @@ python run_pylint.py --root path/to/folder
 
 ### Prerequisites
 
-- Python **3** installed and on the `PATH` [(tutorial on Canvas... complete the "Installing Python" section)](https://gatech.instructure.com/files/7339157/download?download_frd=1)
+- Python installed and on the `PATH` [(tutorial on Canvas... complete the "Installing Python" section)](https://gatech.instructure.com/files/7339157/download?download_frd=1)
 - `pylint` installed using `pip`:
   - `python -m pip install pylint`
 
@@ -102,7 +102,7 @@ Once the required files are present, run the following command, adding each file
 python -m pylint --disable=C0111,R1705,E0401,R0201 --const-naming-style=any file1.py file2.py
 ```
 
-The program should output something similar to the following, where pylint error is listed, along with it's filename, line number, and column number (where applicable).:
+The program should output something similar to the following, where each pylint error is listed, along with its filename, line number, and column number (where applicable).:
 
 ```shell
 $ python -m pylint --disable=C0111,R1705,E0401,R0201 --const-naming-style=any api.py app.py models/object.py
@@ -247,7 +247,7 @@ Once the required files are present, run the following command, adding each file
 java -jar checkstyle-8.24-all.jar -c cs2340_checks.xm file1.java file2.java
 ```
 
-The program should output something similar to the following, where each violation of Checkstyle is listed, along with it's filename, line number, and column number (where applicable).:
+The program should output something similar to the following, where each violation of Checkstyle is listed, along with its filename, line number, and column number (where applicable):
 
 ```shell
 $ java -jar checkstyle-8.24-all.jar -c cs2340_checks.xml Application.java CalculatorWindow.java
