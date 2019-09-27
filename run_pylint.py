@@ -38,7 +38,8 @@ import platform
 import functools
 import traceback
 import warnings
-from pylint import epylint as lint
+from io import StringIO
+from subprocess import PIPE, Popen
 
 DESCRIPTION = "Checkstyle script to run pylint on every .py file in the CWD"
 DISABLED_CHECKS = ["missing-docstring",
@@ -122,7 +123,7 @@ def main(root=None, verbose=False, process_count=None, strict=False):
         for file in files:
             print(" - {}".format(file))
 
-    output = run_linter(files, " ".join(args), strict=strict)
+    output = run_linter(files, args, strict=strict)
     print()
     print(re.sub(SCORE_REGEX, "", output).rstrip())
     print()
@@ -150,7 +151,7 @@ def run_linter(files, args, strict=False):
 
     Parameters:
     files (array(string)): filepaths to python source files
-    args (string): CLI arguments
+    args (list): CLI arguments
 
     Named:
     strict (boolean): Whether to run the linter in strict mode
@@ -162,9 +163,23 @@ def run_linter(files, args, strict=False):
     if not files:
         return ""
 
-    command = "{} {}".format(" ".join(files), get_options(args, strict=strict))
-    (pylint_stdout, _) = lint.py_run(command, return_std=True)
-    return pylint_stdout.getvalue()
+    options = get_options(args, strict=strict)
+
+    executable = sys.executable if "python" in sys.executable else "python"
+    epylint_part = [executable, "-c", "from pylint import epylint;epylint.Run()"]
+    cli = epylint_part + files + options
+    env = dict(os.environ)
+    env["PYTHONPATH"] = os.pathsep.join(sys.path)
+    process = Popen(
+        cli,
+        shell=False,
+        stdout=PIPE,
+        stderr=sys.stderr,
+        env=env,
+        universal_newlines=True,
+    )
+    proc_stdout, _ = process.communicate()
+    return StringIO(proc_stdout).getvalue()
 
 
 @crash_reporter
@@ -190,13 +205,13 @@ def get_options(additional_options, strict=False):
     strict (boolean): Whether to run the linter in strict mode
 
     Parameters:
-    additional_options (string): additional arguments passed to the CLI to append
+    additional_options (list): additional arguments passed to the CLI to append
     """
 
     if strict:
         return additional_options
 
-    return "--disable={} {} {}".format(",".join(DISABLED_CHECKS), BASE_OPTIONS, additional_options)
+    return ["--disable={}".format(",".join(DISABLED_CHECKS)), BASE_OPTIONS] + additional_options
 
 
 def bootstrap():
