@@ -166,13 +166,12 @@ def run_linter(files, args, strict=False):
 
     executable = sys.executable if "python" in sys.executable else "python"
     epylint_part = [executable, "-c", "from pylint import epylint;epylint.Run()"]
-    options = get_options(args, strict=strict)
-    cli_args = epylint_part + files + options
+    cli_args = epylint_part + files + get_options(args, strict=strict)
 
     env = dict(os.environ)
     env["PYTHONPATH"] = os.pathsep.join(sys.path)
 
-    result = subprocess.run(cli_args, capture_output=True, env=env, shell=False)
+    result = subprocess.run(cli_args, capture_output=True, env=env)
     return result.stdout.decode(sys.stdout.encoding)
 
 
