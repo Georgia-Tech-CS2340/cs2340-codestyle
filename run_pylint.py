@@ -36,9 +36,9 @@ import datetime
 import argparse
 import platform
 import functools
+import subprocess
 import traceback
 import warnings
-from pylint import epylint as lint
 
 DESCRIPTION = "Checkstyle script to run pylint on every .py file in the CWD"
 DISABLED_CHECKS = ["missing-docstring",
@@ -122,7 +122,7 @@ def main(root=None, verbose=False, process_count=None, strict=False):
         for file in files:
             print(" - {}".format(file))
 
-    output = run_linter(files, " ".join(args), strict=strict)
+    output = run_linter(files, args, strict=strict)
     print()
     print(re.sub(SCORE_REGEX, "", output).rstrip())
     print()
@@ -150,7 +150,7 @@ def run_linter(files, args, strict=False):
 
     Parameters:
     files (array(string)): filepaths to python source files
-    args (string): CLI arguments
+    args (list): CLI arguments
 
     Named:
     strict (boolean): Whether to run the linter in strict mode
@@ -162,9 +162,15 @@ def run_linter(files, args, strict=False):
     if not files:
         return ""
 
-    command = "{} {}".format(" ".join(files), get_options(args, strict=strict))
-    (pylint_stdout, _) = lint.py_run(command, return_std=True)
-    return pylint_stdout.getvalue()
+    executable = sys.executable if "python" in sys.executable else "python"
+    epylint_part = [executable, "-c", "from pylint import epylint;epylint.Run()"]
+    cli_args = epylint_part + files + get_options(args, strict=strict)
+
+    env = dict(os.environ)
+    env["PYTHONPATH"] = os.pathsep.join(sys.path)
+
+    result = subprocess.run(cli_args, capture_output=True, check=False, env=env)
+    return result.stdout.decode(sys.stdout.encoding)
 
 
 @crash_reporter
@@ -190,13 +196,13 @@ def get_options(additional_options, strict=False):
     strict (boolean): Whether to run the linter in strict mode
 
     Parameters:
-    additional_options (string): additional arguments passed to the CLI to append
+    additional_options (list): additional arguments passed to the CLI to append
     """
 
     if strict:
         return additional_options
 
-    return "--disable={} {} {}".format(",".join(DISABLED_CHECKS), BASE_OPTIONS, additional_options)
+    return ["--disable={}".format(",".join(DISABLED_CHECKS)), BASE_OPTIONS] + additional_options
 
 
 def bootstrap():
