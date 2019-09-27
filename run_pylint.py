@@ -39,6 +39,7 @@ import functools
 import traceback
 import warnings
 from io import StringIO
+import subprocess
 from subprocess import PIPE, Popen
 
 DESCRIPTION = "Checkstyle script to run pylint on every .py file in the CWD"
@@ -163,23 +164,16 @@ def run_linter(files, args, strict=False):
     if not files:
         return ""
 
-    options = get_options(args, strict=strict)
-
     executable = sys.executable if "python" in sys.executable else "python"
     epylint_part = [executable, "-c", "from pylint import epylint;epylint.Run()"]
-    cli = epylint_part + files + options
+    options = get_options(args, strict=strict)
+    cli_args = epylint_part + files + options
+
     env = dict(os.environ)
     env["PYTHONPATH"] = os.pathsep.join(sys.path)
-    process = Popen(
-        cli,
-        shell=False,
-        stdout=PIPE,
-        stderr=sys.stderr,
-        env=env,
-        universal_newlines=True,
-    )
-    proc_stdout, _ = process.communicate()
-    return StringIO(proc_stdout).getvalue()
+
+    result = subprocess.run(cli_args, capture_output=True, env=env, shell=False)
+    return result.stdout.decode(sys.stdout.encoding)
 
 
 @crash_reporter
