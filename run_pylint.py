@@ -39,6 +39,7 @@ import functools
 import subprocess
 import traceback
 import warnings
+from subprocess import PIPE
 
 DESCRIPTION = "Checkstyle script to run pylint on every .py file in the CWD"
 DISABLED_CHECKS = ["missing-docstring",
@@ -169,7 +170,8 @@ def run_linter(files, args, strict=False):
     env = dict(os.environ)
     env["PYTHONPATH"] = os.pathsep.join(sys.path)
 
-    result = subprocess.run(cli_args, capture_output=True, check=False, env=env)
+    result = subprocess.run(cli_args, stdout=PIPE,
+                            stderr=PIPE, check=False, env=env)
     return result.stdout.decode(sys.stdout.encoding)
 
 
