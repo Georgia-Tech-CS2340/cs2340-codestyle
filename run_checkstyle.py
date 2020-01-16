@@ -90,23 +90,26 @@ def crash_reporter(func=None, fallback=SENTINEL):
                 # Disable platform.dist() deprecation warning
                 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-                print("An unexpected error has occurred in the checkstyle script")
-                print("===================================================================")
-                print("Please make a private post on Piazza with the following information")
+                print(" ┌─────────────────────────────────────────────────────────────────────┐")
+                print(" │ An unexpected error has occurred in the checkstyle script           │")
+                print(" │ Please make a private post on Piazza with the following information │")
+                print(" └─────────────────────────────────────────────────────────────────────┘")
+                print()
                 print("Error during {}".format(function.__name__))
                 print(traceback.format_exc())
-                print("===================================================================")
                 print("Time: {}".format(str(datetime.datetime.now())))
                 print("Script: run_checkstyle.py")
                 print("Python version: {} => {}".format(sys.version, sys.version_info))
                 print("Platform: {}".format(sys.platform))
                 print("Architecture: {}".format(platform.architecture()))
+                # pylint: disable=deprecated-method
                 print("Distribution: {}".format(platform.dist()))
                 print("Processor: {}".format(platform.processor()))
                 print("System: {}".format(platform.system()))
                 print("uname: {}".format(platform.uname()))
                 print("CPU Count: {}".format(os.cpu_count()))
-                print("===================================================================")
+                print()
+                print("════════════════════════════════════════════════════════════════════════")
 
                 if fallback is SENTINEL:
                     # Unrecoverable error
@@ -144,7 +147,8 @@ def main(root=None, verbose=False):
     path = os.path.abspath(root) if root is not None else os.getcwd()
     files = find_files(path, JAVA_EXTENSION)
 
-    print("Running Checkstyle on {} files:".format(len(files)))
+    verbose_tip = " (run with -v to view files)" if not verbose else ""
+    print("Running Checkstyle on {} files{}:".format(len(files), verbose_tip))
     # Print each file in verbose mode
     if verbose:
         for file in files:
