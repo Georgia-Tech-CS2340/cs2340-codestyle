@@ -199,7 +199,7 @@ Downloading checkstyle-8.24-all.jar
 > Note: The checkstyle jar has been downloaded and a gitignore has automatically been created
         for you at the project root. This file should be checked into version control.
 
-Running Checkstyle on 3 files:
+Running Checkstyle on 3 files (run with -v to view files):
 
 Starting audit...
 [WARN] ~/project/src/CalculatorWindow.java:29:43: ',' is preceded with whitespace. [NoWhitespaceBefore]
@@ -263,6 +263,8 @@ Audit done.
 Overall, this method is more complex and requires using platform-specific ways of finding every java file in a directory to run Checkstyle on. For those reasons, we recommend using the `run_checkstyle.py` script as detailed above.
 
 ## Running via IDE/Editor Plugins
+
+> **Warning**: It is not sufficient to show the IDE checkstyle results during a demo. To receive credit for the checkstyle portion, the official script must be run during the demo and the TAs must see the output. These instructions are provided for your convenience.
 
 Plugins are available for Checkstyle for a variety of different editors/IDEs. Some of the more popular ones are listed below:
 

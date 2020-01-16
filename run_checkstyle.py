@@ -269,9 +269,8 @@ def find_or_download(filename, url):
 @crash_reporter(fallback=10.0)
 def assemble_score(files, checkstyle_output):
     """
-    Calculates code "score" using the same formula as pylint for consistency:
-    https://docs.pylint.org/en/1.6.0/faq.html#pylint-gave-my-code-a-negative-rating-out-of-ten-that-can-t-be-right
-    """  # pylint: disable=line-too-long
+    Calculates code "score" using class-specific formula
+    """
 
     errors = count_errors(checkstyle_output)
     statements = 0
