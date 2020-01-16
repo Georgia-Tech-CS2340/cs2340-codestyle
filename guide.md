@@ -99,13 +99,13 @@ python run_pylint.py --root path/to/folder
 Once the required files are present, run the following command, adding each file to the end as necessary:
 
 ```shell
-python -m pylint --disable=C0111,R1705,E0401,R0201 --const-naming-style=any file1.py file2.py
+python -m pylint --disable=C0111,R1705,E0401,R0201,E1101 --const-naming-style=any file1.py file2.py
 ```
 
 The program should output something similar to the following, where each pylint error is listed, along with its filename, line number, and column number (where applicable).:
 
 ```shell
-$ python -m pylint --disable=C0111,R1705,E0401,R0201 --const-naming-style=any api.py app.py models/object.py
+$ python -m pylint --disable=C0111,R1705,E0401,R0201,E1101 --const-naming-style=any api.py app.py models/object.py
  ************* Module object
  models/object.py:9: convention (C0326, bad-whitespace, ) Exactly one space required after :
          if name in objects.keys():    return objects[name], 200
@@ -137,7 +137,7 @@ Plugins are available for `pylint` for a variety of different editors/IDEs. Some
 - [PyCharm](https://plugins.jetbrains.com/plugin/11084-pylint) - pylint plugin that creates editor inspections for pylint checks
 - [Visual Studio Code](https://code.visualstudio.com/docs/python/linting) - vscode plugin that runs pylint automatically
   - Make sure to set the following setting to replicate the specific checks used for this class:
-  - `"python.linting.pylintArgs": ["--disable=C0111,R1705,E0401,R0201"]`
+  - `"python.linting.pylintArgs": ["--disable=C0111,R1705,E0401,R0201,E1101"]`
 - [Atom](https://atom.io/packages/linter-pylint) - pylint plugin that leverages the Atom linters API to visualize errors in code
 - [Emacs](https://docs.pylint.org/en/1.6.0/ide-integration.html#using-pylint-thru-flymake-in-emacs) - integration via `flymake`
 

@@ -42,7 +42,7 @@ import warnings
 from subprocess import PIPE
 
 DESCRIPTION = "Checkstyle script to run pylint on every .py file in the CWD"
-DISABLED_CHECKS = ["missing-docstring",
+DISABLED_CHECKS = ["missing-docstring", "no-member",
                    "no-else-return", "import-error", "no-self-use"]
 BASE_OPTIONS = "--const-naming-style=any"
 PYTHON_EXTENSION = ".py"
