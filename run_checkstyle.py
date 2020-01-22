@@ -105,8 +105,13 @@ def crash_reporter(func=None, fallback=SENTINEL):
                 print("Python version: {} => {}".format(sys.version, sys.version_info))
                 print("Platform: {}".format(sys.platform))
                 print("Architecture: {}".format(platform.architecture()))
-                # pylint: disable=deprecated-method
-                print("Distribution: {}".format(platform.dist()))
+                try:
+                    # pylint: disable=deprecated-method
+                    print("Distribution: {}".format(platform.dist()))
+                except AttributeError:
+                    # no-op
+                    pass
+
                 print("Processor: {}".format(platform.processor()))
                 print("System: {}".format(platform.system()))
                 print("uname: {}".format(platform.uname()))
@@ -347,7 +352,8 @@ def format_size(size):
     Formats a filesize to use Kb
     """
 
-    return f"{int(size / 1024)} KB"
+    kb_int = int(size / 1024)
+    return "{:d} KB".format(kb_int)
 
 
 def report_hook(block_num, block_size, total_size):
@@ -361,7 +367,7 @@ def report_hook(block_num, block_size, total_size):
     if total_size > 0:
         percent = min(read_progress * 1e2 / total_size, 1e2)
         clamped_progress = min(total_size, read_progress)
-        fraction = f"{format_size(clamped_progress):} / {format_size(total_size)}"
+        fraction = "{:s} / {:s}".format(format_size(clamped_progress), format_size(total_size))
         progress_string = "\r{:5.1f}% {:s}".format(percent, fraction)
         sys.stdout.write(progress_string)
         if read_progress >= total_size:
