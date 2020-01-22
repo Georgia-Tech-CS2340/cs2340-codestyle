@@ -342,6 +342,13 @@ def is_invalid_statement(statement):
     return (re.search(AFTER_BRACE_REGEX, statement)
             or re.search(EMPTY_STATEMENT_REGEX, statement))
 
+def format_size(size):
+    """
+    Formats a filesize to use Kb
+    """
+
+    return f"{int(size / 1024)} KB"
+
 
 def report_hook(block_num, block_size, total_size):
     """
@@ -354,7 +361,8 @@ def report_hook(block_num, block_size, total_size):
     if total_size > 0:
         percent = min(read_progress * 1e2 / total_size, 1e2)
         clamped_progress = min(total_size, read_progress)
-        progress_string = "\r{:5.1f}% {:d} / {:d}".format(percent, clamped_progress, total_size)
+        fraction = f"{format_size(clamped_progress):} / {format_size(total_size)}"
+        progress_string = "\r{:5.1f}% {:s}".format(percent, fraction)
         sys.stdout.write(progress_string)
         if read_progress >= total_size:
             sys.stdout.write("\n")
