@@ -18,6 +18,7 @@ https://www.python.org/downloads/
     sys.exit()
 
 import os
+import ssl
 import argparse
 import urllib.request
 import re
@@ -30,15 +31,18 @@ import subprocess
 from subprocess import PIPE
 from shutil import which
 
+# Make requests with SSL verification disabled - misconfiguration of Python3 on OSX causes crash
+# https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate
+# pylint: disable=protected-access
+ssl._create_default_https_context = ssl._create_unverified_context
+
 DESCRIPTION = "Checkstyle script to run checkstyle on every .java file in the CWD"
 JAVA_EXTENSION = ".java"
 BASE_PROCESS = ["java", "-jar"]
 CHECKSTYLE_XML_NAME = "cs2340_checks.xml"
-# Use HTTP wihout SSL - misconfiguration of Python3 on OSX causes crash
-# See https://stackoverflow.com/questions/52805115/certificate-verify-failed-unable-to-get-local-issuer-certificate
-CHECKSTYLE_XML_URL = "http://raw.githubusercontent.com/jazevedo620/cs2340-codestyle/master/cs2340_checks.xml" # pylint: disable=line-too-long
-CHECKSTYLE_JAR_URL = "http://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.24/checkstyle-8.24-all.jar" # pylint: disable=line-too-long
+CHECKSTYLE_XML_URL = "https://raw.githubusercontent.com/jazevedo620/cs2340-codestyle/master/cs2340_checks.xml" # pylint: disable=line-too-long
 CHECKSTYLE_JAR_NAME = "checkstyle-8.24-all.jar"
+CHECKSTYLE_JAR_URL = "https://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.24/checkstyle-8.24-all.jar" # pylint: disable=line-too-long
 CHECKSTYLE_JAR_GITIGNORE = "checkstyle-*.jar"
 CHECKSTYLE_JAR_PATTERN = r"checkstyle-.*\.jar"
 SENTINEL = object()
@@ -183,7 +187,8 @@ def add_to_gitignore(filename):
         return False, ""
 
     repo_relative_folder = os.path.dirname(filename)
-    result = subprocess.run(GIT_REPO_COMMAND, stdout=PIPE, stderr=PIPE, cwd=repo_relative_folder)
+    result = subprocess.run(GIT_REPO_COMMAND, stdout=PIPE, stderr=PIPE,
+                            cwd=repo_relative_folder, check=False)
     repo_root = result.stdout.decode(sys.stdout.encoding).strip()
     error = result.stderr.decode(sys.stderr.encoding).strip()
 
@@ -240,7 +245,7 @@ def is_ignored(regex, cwd=None):
     Determines whether the given file is ignored in its containing git repository
     """
 
-    result = subprocess.run(IGNORED_FILE_COMMAND, stdout=PIPE, stderr=PIPE, cwd=cwd)
+    result = subprocess.run(IGNORED_FILE_COMMAND, stdout=PIPE, stderr=PIPE, cwd=cwd, check=False)
     output = result.stdout.decode(sys.stdout.encoding)
     output += result.stderr.decode(sys.stderr.encoding)
     for line in output.splitlines():
@@ -397,7 +402,7 @@ def run_checkstyle(files, jar_path=None, xml_path=None):
         return ""
 
     args = BASE_PROCESS + [jar_path, "-c", xml_path] + files
-    result = subprocess.run(args, stdout=PIPE, stderr=PIPE)
+    result = subprocess.run(args, stdout=PIPE, stderr=PIPE, check=False)
     return result.stdout.decode(sys.stdout.encoding) + result.stderr.decode(sys.stderr.encoding)
 
 
