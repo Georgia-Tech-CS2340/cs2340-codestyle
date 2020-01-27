@@ -90,7 +90,7 @@ python run_pylint.py --root path/to/folder
 
 ### Prerequisites
 
-- Python installed and on the `PATH` [(tutorial on Canvas... complete the "Installing Python" section)](https://gatech.instructure.com/files/7339157/download?download_frd=1)
+- Python installed and on the `PATH` [(tutorial for Windows here)](https://geek-university.com/python/add-python-to-the-windows-path/)
 - `pylint` installed using `pip`:
   - `python -m pip install pylint`
 
@@ -163,7 +163,7 @@ A utility script was developed by the CS 2340 TAs to make running Checkstyle on 
 ### Prerequisites
 
 - Java installed and on the `PATH` [(tutorial)](https://www.java.com/en/download/help/path.xml)
-- Python **3** installed and on the `PATH` [(tutorial on Canvas... complete the "Installing Python" section)](https://gatech.instructure.com/files/7339157/download?download_frd=1)
+- Python **3** installed and on the `PATH` [(tutorial for Windows here)](https://geek-university.com/python/add-python-to-the-windows-path/)
 - [Checkstyle script](https://raw.githubusercontent.com/jazevedo620/cs2340-codestyle/master/run_checkstyle.py) downloaded
 
 ### Running
@@ -191,10 +191,10 @@ This will output something like the following:
 ~/project/ $ python run_checkstyle.py
 
 Downloading cs2340_checks.xml
-100.0% 4873 / 4873
+100.0% 4 KB / 4 KB
 
 Downloading checkstyle-8.24-all.jar
-100.0% 11625142 / 11625142
+100.0% 11352 KB / 11352 KB
 
 > Note: The checkstyle jar has been downloaded and a gitignore has automatically been created
         for you at the project root. This file should be checked into version control.
