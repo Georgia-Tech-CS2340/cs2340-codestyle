@@ -216,7 +216,7 @@ def add_to_gitignore(filename):
 
     # Append to existing
     with open(gitignore_path, "a") as gitignore:
-        gitignore.write(CHECKSTYLE_JAR_GITIGNORE + "\n")
+        gitignore.write("\n" + CHECKSTYLE_JAR_GITIGNORE + "\n")
     return True, "modify"
 
 
