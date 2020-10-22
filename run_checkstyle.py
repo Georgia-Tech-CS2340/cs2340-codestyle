@@ -178,7 +178,7 @@ def main(root=None, verbose=False):
     print()
 
     # Exit with a proper exit code (epsilon equality)
-    if score >= (MAX_SCORE - 0.0001):
+    if score >= (MAX_SCORE - 0.0000001):
         sys.exit(0)
     else:
         sys.exit(1)
