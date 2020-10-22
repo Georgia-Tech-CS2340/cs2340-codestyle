@@ -15,7 +15,7 @@ if sys.version_info[0] < 3:
         """This script requires Python 3 to run:
 https://www.python.org/downloads/
 """)
-    sys.exit()
+    sys.exit(-1)
 
 import os
 import ssl
