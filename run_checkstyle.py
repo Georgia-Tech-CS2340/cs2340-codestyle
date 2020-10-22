@@ -55,7 +55,8 @@ AFTER_BRACE_REGEX = r"{\s*;"
 EMPTY_STATEMENT_REGEX = r"^\s*;"
 CHECKSTYLE_OUTPUT_REGEX = r"^\[[A-Z]+\] (.+?):\d+(?::\d+?)?:"
 ERROR_TEXT_REGEX = r"CheckstyleException: Exception was thrown while processing .+\.java"
-SCORE_FORMAT = """Your code has been rated at {:.2f}/10 [raw score: {:.2f}/10]"""
+MAX_SCORE=10
+SCORE_FORMAT = """Your code has been rated at {:.2f}/{} [raw score: {:.2f}/{}]"""
 
 # Gitignore analysis
 GIT_REPO_COMMAND = ["git", "rev-parse", "--show-toplevel"]
@@ -125,7 +126,7 @@ def crash_reporter(func=None, fallback=SENTINEL):
 
                 if fallback is SENTINEL:
                     # Unrecoverable error
-                    sys.exit()
+                    sys.exit(-1)
 
                 return fallback
         return crash_handler
@@ -171,10 +172,16 @@ def main(root=None, verbose=False):
     print(output)
     # Print score
     score = 0 if re.search(ERROR_TEXT_REGEX, output) else assemble_score(files, output)
-    score_output = SCORE_FORMAT.format(max(score, 0), score)
+    score_output = SCORE_FORMAT.format(max(score, 0), MAX_SCORE, score, MAX_SCORE)
     print(len(score_output) * "-")
     print(score_output)
     print()
+
+    # Exit with a proper exit code (epsilon equality)
+    if score >= (MAX_SCORE - 0.0001):
+        sys.exit(0)
+    else:
+        sys.exit(1)
 
 
 @crash_reporter(fallback=(False, ""))
