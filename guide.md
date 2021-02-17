@@ -147,12 +147,12 @@ Plugins are available for `pylint` for a variety of different editors/IDEs. Some
 
 # Java /  Checkstyle
 
-For Java, [Checkstyle](https://checkstyle.org/) is used, which is a static code analysis tool that helps programmers write Java code that adheres to a coding standard. For this class, *the coding standard is provided* in the form of a Checkstyle configuration file. It can be [downloaded directly from github](https://raw.githubusercontent.com/jazevedo620/cs2340-codestyle/master/cs2340_checks.xml), and is based off of the one used in CS 1332, Data Structures & Algorithms. **It is important that you run this configuration file on the most recent version of Checkstyle (as of writing this), Checkstyle 8.24.** More details on each check can be found in the [official Checkstyle documentation](https://checkstyle.sourceforge.io/checks.html).
+For Java, [Checkstyle](https://checkstyle.org/) is used, which is a static code analysis tool that helps programmers write Java code that adheres to a coding standard. For this class, *the coding standard is provided* in the form of a Checkstyle configuration file. It can be [downloaded directly from github](https://raw.githubusercontent.com/Georgia-Tech-CS2340/cs2340-codestyle/master/cs2340_checks.xml), and is based off of the one used in CS 1332, Data Structures & Algorithms. **It is important that you run this configuration file on the most recent version of Checkstyle (as of writing this), Checkstyle 8.24.** More details on each check can be found in the [official Checkstyle documentation](https://checkstyle.sourceforge.io/checks.html).
 
 In addition, there are some examples of compliant/noncompliant example code provided:
 
-- [`CalculatorWindow.java` (non-compiliant)](https://github.com/jazevedo620/cs2340-codestyle/blob/master/swing/CalculatorWindow.java) - example Swing application with poor formatting
-- [`CalculatorWindowFormatted.java` (compliant)](https://github.com/jazevedo620/cs2340-codestyle/blob/master/swing/CalculatorWindowFormatted.java) - same as above, plus it passes all Checkstyle checks
+- [`CalculatorWindow.java` (non-compiliant)](https://github.com/Georgia-Tech-CS2340/cs2340-codestyle/blob/master/swing/CalculatorWindow.java) - example Swing application with poor formatting
+- [`CalculatorWindowFormatted.java` (compliant)](https://github.com/Georgia-Tech-CS2340/cs2340-codestyle/blob/master/swing/CalculatorWindowFormatted.java) - same as above, plus it passes all Checkstyle checks
 
 As with pylint, there are a few different ways of running Checkstyle, each of which are detailed below.
 
@@ -164,7 +164,7 @@ A utility script was developed by the CS 2340 TAs to make running Checkstyle on 
 
 - Java installed and on the `PATH` [(tutorial)](https://www.java.com/en/download/help/path.xml)
 - Python **3** installed and on the `PATH` [(tutorial for Windows here)](https://geek-university.com/python/add-python-to-the-windows-path/)
-- [Checkstyle script](https://raw.githubusercontent.com/jazevedo620/cs2340-codestyle/master/run_checkstyle.py) downloaded
+- [Checkstyle script](https://raw.githubusercontent.com/Georgia-Tech-CS2340/cs2340-codestyle/master/run_checkstyle.py) downloaded
 
 ### Running
 
@@ -235,7 +235,7 @@ python run_checkstyle.py --root path/to/folder
 
 - Java installed and on the `PATH` [(tutorial)](https://www.java.com/en/download/help/path.xml)
 - [checkstyle jar](https://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.24/checkstyle-8.24-all.jar) (version 8.24) downloaded and in the same directory as your code
-- [configuration file](https://raw.githubusercontent.com/jazevedo620/cs2340-codestyle/master/cs2340_checks.xml) downloaded and in the same directory as your code
+- [configuration file](https://raw.githubusercontent.com/Georgia-Tech-CS2340/cs2340-codestyle/master/cs2340_checks.xml) downloaded and in the same directory as your code
 
 > **Note:** the given configuration file has only been tested with the latest version of Checkstyle as of writing this (8.24), so it might break with older versions
 
