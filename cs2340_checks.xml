@@ -7,7 +7,7 @@
     <!-- Credit to the CS 1332 team for the basis of this checkstyle
     configuration file -->
 
-    <!-- ! Make sure you are using Checkstyle 8.24 for this file ! -->
+    <!-- ! Make sure you are using Checkstyle 8.41 for this file ! -->
     <property name="charset" value="UTF-8"/>
     <property name="severity" value="warning"/>
 
@@ -20,7 +20,7 @@
         <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
     </module>
 
-    <!-- Allow students to use java modules-->
+    <!-- Allow students to use java modules -->
     <module name="BeforeExecutionExclusionFileFilter">
         <property name="fileNamePattern" value="module\-info\.java$"/>
     </module>
@@ -90,7 +90,6 @@
 
         <!-- Javadoc checks.                              -->
         <module name="JavadocMethod">
-            <property name="allowUndeclaredRTE" value="true"/>
             <property name="allowedAnnotations" value="Override, Test, Before, After, BeforeClass, AfterClass"/>
         </module>
         <module name="JavadocStyle">

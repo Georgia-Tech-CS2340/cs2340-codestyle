@@ -113,7 +113,7 @@ $ python run_checkstyle.py --root ./swing -v
 Downloading cs2340_checks.xml
 100.0% 4873 / 4873
 
-Downloading checkstyle-8.24-all.jar
+Downloading checkstyle-8.41-all.jar
 100.0% 11625142 / 11625142
 
 > Note: The checkstyle jar has been downloaded and automatically added to your gitignore.

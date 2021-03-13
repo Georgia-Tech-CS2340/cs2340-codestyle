@@ -7,7 +7,7 @@ output: pdf_document
 
 # Java /  Checkstyle
 
-For Java, [Checkstyle](https://checkstyle.org/) is used, which is a static code analysis tool that helps programmers write Java code that adheres to a coding standard. For this class, *the coding standard is provided* in the form of a Checkstyle configuration file. It can be [downloaded directly from github](https://raw.githubusercontent.com/Georgia-Tech-CS2340/cs2340-codestyle/master/cs2340_checks.xml), and is based off of the one used in CS 1332, Data Structures & Algorithms. **It is important that you run this configuration file on the most recent version of Checkstyle (as of writing this), Checkstyle 8.24.** More details on each check can be found in the [official Checkstyle documentation](https://checkstyle.sourceforge.io/checks.html).
+For Java, [Checkstyle](https://checkstyle.org/) is used, which is a static code analysis tool that helps programmers write Java code that adheres to a coding standard. For this class, *the coding standard is provided* in the form of a Checkstyle configuration file. It can be [downloaded directly from github](https://raw.githubusercontent.com/Georgia-Tech-CS2340/cs2340-codestyle/master/cs2340_checks.xml), and is based off of the one used in CS 1332, Data Structures & Algorithms. **It is important that you run this configuration file on Checkstyle 8.41.** More details on each check can be found in the [official Checkstyle documentation](https://checkstyle.sourceforge.io/checks.html).
 
 In addition, there are some examples of compliant/noncompliant example code provided:
 
@@ -53,7 +53,7 @@ This will output something like the following:
 Downloading cs2340_checks.xml
 100.0% 4 KB / 4 KB
 
-Downloading checkstyle-8.24-all.jar
+Downloading checkstyle-8.41-all.jar
 100.0% 11352 KB / 11352 KB
 
 > Note: The checkstyle jar has been downloaded and a gitignore has automatically been created
@@ -94,23 +94,23 @@ python run_checkstyle.py --root path/to/folder
 ### Prerequisites
 
 - Java installed and on the `PATH` [(tutorial)](https://www.java.com/en/download/help/path.xml)
-- [checkstyle jar](https://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.24/checkstyle-8.24-all.jar) (version 8.24) downloaded and in the same directory as your code
+- [checkstyle jar](https://github.com/checkstyle/checkstyle/releases/download/checkstyle-8.41/checkstyle-8.41-all.jar) (version 8.41) downloaded and in the same directory as your code
 - [configuration file](https://raw.githubusercontent.com/Georgia-Tech-CS2340/cs2340-codestyle/master/cs2340_checks.xml) downloaded and in the same directory as your code
 
-> **Note:** the given configuration file has only been tested with the latest version of Checkstyle as of writing this (8.24), so it might break with older versions
+> **Note:** the given configuration file has only been tested with the latest version of Checkstyle as of writing this (8.41), so it might break with older versions
 
 ### Running
 
 Once the required files are present, run the following command, adding each file to the end as necessary:
 
 ```shell
-java -jar checkstyle-8.24-all.jar -c cs2340_checks.xm file1.java file2.java
+java -jar checkstyle-8.41-all.jar -c cs2340_checks.xm file1.java file2.java
 ```
 
 The program should output something similar to the following, where each violation of Checkstyle is listed, along with its filename, line number, and column number (where applicable):
 
 ```shell
-$ java -jar checkstyle-8.24-all.jar -c cs2340_checks.xml Application.java CalculatorWindow.java
+$ java -jar checkstyle-8.41-all.jar -c cs2340_checks.xml Application.java CalculatorWindow.java
 Starting audit...
 [WARN] ~/project/src/CalculatorWindow.java:29:43: ',' is preceded with whitespace. [NoWhitespaceBefore]
 [WARN] ~/project/src/CalculatorWindow.java:41:44: '{' is not preceded with whitespace. [WhitespaceAround]
@@ -132,6 +132,6 @@ Plugins are available for Checkstyle for a variety of different editors/IDEs. So
   - Make sure to follow the instructions at the link to set the `cs2340_checks.xml` as the Checkstyle configuration file
 - [Eclipse](https://checkstyle.org/eclipse-cs/#!/) - Checkstyle integration into Eclipse
 - [IntelliJ IDEA](https://plugins.jetbrains.com/plugin/1065-checkstyle-idea) - JetBrains plugin that adds Checkstyle side pane for real-time and on-demand Checkstyle running
-  - **Make sure to set the Checkstyle version to 8.24 in the Checkstyle settings** (you may need to update your plugin to see this option appear)
+  - **Make sure to set the Checkstyle version to 8.41 in the Checkstyle settings** (you may need to update your plugin to see this option appear)
 
 > **Note**: it is recommended to run Checkstyle via the script/directly at least once before submitting each milestone to make sure all errors are caught.
